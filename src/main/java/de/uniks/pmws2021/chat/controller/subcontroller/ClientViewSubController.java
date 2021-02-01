@@ -96,6 +96,7 @@ public class ClientViewSubController {
 
     private void sendMsgButtonOnClick(ActionEvent event) {
         System.out.println(inputTextField.getText());
+        inputTextField.clear();
     }
 
     private void leaveChatButtonOnClick(ActionEvent event) {
