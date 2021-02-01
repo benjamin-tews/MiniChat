@@ -55,6 +55,8 @@ public class StartViewController {
         dialog.setHeaderText("Pls create a new user.");
         dialog.setContentText("Username: ");
         dialog.showAndWait().ifPresent(this.editor::haveUser);
+        // some dummies
+        this.editor.createDummies();
 
         clientViewSubController.init();
     }

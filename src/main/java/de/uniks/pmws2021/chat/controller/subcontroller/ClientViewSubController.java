@@ -3,6 +3,9 @@ package de.uniks.pmws2021.chat.controller.subcontroller;
 import de.uniks.pmws2021.chat.ChatEditor;
 import de.uniks.pmws2021.chat.StageManager;
 import de.uniks.pmws2021.chat.model.User;
+import de.uniks.pmws2021.chat.view.chatListViewCellFactory;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
@@ -28,6 +31,7 @@ public class ClientViewSubController {
     private TextField inputTextField;
     private ListView<User> chatListView;
     private AnchorPane allUserTabAnchorPane;
+    private ObservableList<User> usersObservableList;
 
     public ClientViewSubController(Parent view, ChatEditor editor, Stage stage) {
         this.view = view;
@@ -53,6 +57,7 @@ public class ClientViewSubController {
             allUserTab = view.lookup("#AllUserTab");
             inputTextField = (TextField) view.lookup("#InputTextField");
             chatListView = (ListView<User>) view.lookup("#ChatListView");
+            chatListView.setCellFactory(new chatListViewCellFactory());
             allUserTabAnchorPane = (AnchorPane) view.lookup("#AllUserTabAnchorPane");
 
             // set on mouse action
@@ -60,12 +65,25 @@ public class ClientViewSubController {
             sendMsgButton.setOnAction(this::sendMsgButtonOnClick);
             inputTextField.setOnMouseClicked(this::inputTextFieldActivated);
             allUserTab.setOnMouseClicked(this::allUserTabActivated);
+            chatListView.setOnMouseReleased(this::chatListViewOnDoubleClick);
+
+            // List View
+            usersObservableList = FXCollections.observableArrayList();
+            usersObservableList.addAll(this.editor.getUserList());
+            // ToDo: unsafe operation - fix this
+            chatListView.setItems(usersObservableList);
 
         } catch (Exception e) {
             System.err.println("Failed to load Chat Client :: ClientViewSubController init()");
             e.printStackTrace();
         }
 
+    }
+
+    private void chatListViewOnDoubleClick(MouseEvent event) {
+        if (event.getClickCount() == 2) {
+            System.out.println("Doubleclick on List Item");
+        }
     }
 
     private void inputTextFieldActivated(MouseEvent event) {
@@ -77,7 +95,7 @@ public class ClientViewSubController {
     }
 
     private void sendMsgButtonOnClick(ActionEvent event) {
-        System.out.println("Send Message");
+        System.out.println(inputTextField.getText());
     }
 
     private void leaveChatButtonOnClick(ActionEvent event) {

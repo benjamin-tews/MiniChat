@@ -5,7 +5,6 @@ import de.uniks.pmws2021.chat.StageManager;
 import de.uniks.pmws2021.chat.model.User;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
