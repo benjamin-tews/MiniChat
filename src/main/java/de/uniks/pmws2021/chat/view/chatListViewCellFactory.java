@@ -17,6 +17,7 @@ public class chatListViewCellFactory implements javafx.util.Callback<ListView<Us
         protected void updateItem(User item, boolean empty) {
             super.updateItem(item, empty);
             if (!empty){
+                // makes my listView more sexy
                 this.setText(item.getName());
             }
         }
