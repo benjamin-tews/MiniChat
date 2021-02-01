@@ -2,11 +2,14 @@ package de.uniks.pmws2021.chat.controller.subcontroller;
 
 import de.uniks.pmws2021.chat.ChatEditor;
 import de.uniks.pmws2021.chat.StageManager;
+import de.uniks.pmws2021.chat.model.User;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.ListView;
 import javafx.stage.Stage;
 
 public class ServerViewSubController {
@@ -16,6 +19,7 @@ public class ServerViewSubController {
     private Button closeServerButton;
     private Button disconnectOneButton;
     private Button disconnectAllButton;
+    private ListView<User> memberListView;
 
     public ServerViewSubController(Parent view, ChatEditor editor, Stage stage) {
         this.view = view;
@@ -38,6 +42,7 @@ public class ServerViewSubController {
             closeServerButton = (Button) view.lookup("#CloseServerButton");
             disconnectOneButton = (Button) view.lookup("#DisconnectOneButton");
             disconnectAllButton = (Button) view.lookup("#DisconnectAllButton");
+            memberListView = (ListView<User>) view.lookup("#MemberListView");
 
             // set on mouse action
             closeServerButton.setOnAction(this::closeServerButtonOnClick);
@@ -46,7 +51,7 @@ public class ServerViewSubController {
 
 
         } catch (Exception e) {
-            System.err.println("Failed to load Hero Screen :: showHeroScreen");
+            System.err.println("Failed to load Chat Server :: ServerViewSubController init()");
             e.printStackTrace();
         }
 

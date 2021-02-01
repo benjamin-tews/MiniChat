@@ -6,6 +6,7 @@ import de.uniks.pmws2021.chat.controller.subcontroller.ServerViewSubController;
 import javafx.event.ActionEvent;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
+import javafx.scene.control.TextInputDialog;
 import javafx.stage.Stage;
 
 public class StartViewController {
@@ -48,7 +49,14 @@ public class StartViewController {
 
     // load views on mouse action
     private void clientButtonOnClick(ActionEvent event) {
+        // Input Dialog
+        TextInputDialog dialog = new TextInputDialog();
+        dialog.setTitle("New User");
+        dialog.setHeaderText("Pls create a new user.");
+        dialog.setContentText("Username: ");
+        dialog.showAndWait().ifPresent(this.editor::haveUser);
 
+        clientViewSubController.init();
     }
 
     private void serverButtonOnClick(ActionEvent event) {

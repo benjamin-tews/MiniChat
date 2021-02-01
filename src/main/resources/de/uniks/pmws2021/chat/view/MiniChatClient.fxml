@@ -11,7 +11,6 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-
 <HBox id="MiniChatClient" alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1">
    <children>
       <VBox alignment="TOP_CENTER" prefWidth="400.0">
@@ -20,7 +19,7 @@
               <tabs>
                 <Tab id="AllUserTab" closable="false" text="All">
                   <content>
-                    <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
+                    <AnchorPane id="AllUserTabAnchorPane" minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
                   </content>
                 </Tab>
                 <Tab text="User1">
@@ -40,7 +39,7 @@
             </TabPane>
             <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0">
                <children>
-                  <TextField id="InputTextFiels" prefHeight="30.0" prefWidth="300.0" promptText="Type in Your Text ...">
+                  <TextField id="InputTextField" prefHeight="30.0" prefWidth="300.0" promptText="Type in Your Text ...">
                      <HBox.margin>
                         <Insets right="24.0" />
                      </HBox.margin>

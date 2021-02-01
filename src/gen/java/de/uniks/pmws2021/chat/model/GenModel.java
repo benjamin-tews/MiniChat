@@ -31,4 +31,5 @@ public class GenModel implements ClassModelDecorator
 		// this::one is fucking awesome!!!
 		mm.haveNestedClasses(GenModel.class);
 	}
+
 }
