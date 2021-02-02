@@ -3,6 +3,7 @@ package de.uniks.pmws2021.chat.controller.subcontroller;
 import de.uniks.pmws2021.chat.ChatEditor;
 import de.uniks.pmws2021.chat.StageManager;
 import de.uniks.pmws2021.chat.model.User;
+import de.uniks.pmws2021.chat.util.ResourceManager;
 import de.uniks.pmws2021.chat.view.chatListViewCellFactory;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -23,7 +24,6 @@ public class ClientViewSubController {
 
     private Parent view;
     private ChatEditor editor;
-    private Stage stage;
     private Button leaveChatButton;
     private Button sendMsgButton;
     private Node allUserTab;
@@ -33,10 +33,9 @@ public class ClientViewSubController {
     private AnchorPane allUserTabAnchorPane;
     private ObservableList<User> usersObservableList;
 
-    public ClientViewSubController(Parent view, ChatEditor editor, Stage stage) {
+    public ClientViewSubController(Parent view, ChatEditor editor) {
         this.view = view;
         this.editor = editor;
-        this.stage = stage;
     }
 
 
@@ -46,9 +45,9 @@ public class ClientViewSubController {
             view = FXMLLoader.load(StageManager.class.getResource("view/MiniChatClient.fxml"));
             Scene scene = new Scene(view);
 
-            // display via StageManager
-            stage.setTitle("PMWS2021 - Mini Chat::Client");
-            stage.setScene(scene);
+            // display Scene
+            StageManager.stage.setTitle("PMWS2021 - Mini Chat::Client");
+            StageManager.stage.setScene(scene);
 
             // load all view references
             leaveChatButton = (Button) view.lookup("#LeaveChatButton");
@@ -69,6 +68,9 @@ public class ClientViewSubController {
 
             // List View
             usersObservableList = FXCollections.observableArrayList();
+            // load users
+            ResourceManager.loadServerUsers();
+            // add to list
             usersObservableList.addAll(this.editor.getUserList());
             // ToDo: unsafe operation - fix this
             chatListView.setItems(usersObservableList);
@@ -101,7 +103,15 @@ public class ClientViewSubController {
 
     private void leaveChatButtonOnClick(ActionEvent event) {
         System.out.println("Disconnect ClientView");
+        saveUsers();
         StageManager.showMiniChatStart();
+    }
+
+    private void saveUsers() {
+        for (User user : this.editor.getUserList()
+             ) {
+            ResourceManager.saveServerUsers(user);
+        }
     }
 
 }

@@ -14,16 +14,14 @@ import javafx.stage.Stage;
 public class ServerViewSubController {
     private Parent view;
     private ChatEditor editor;
-    private Stage stage;
     private Button closeServerButton;
     private Button disconnectOneButton;
     private Button disconnectAllButton;
     private ListView<User> memberListView;
 
-    public ServerViewSubController(Parent view, ChatEditor editor, Stage stage) {
+    public ServerViewSubController(Parent view, ChatEditor editor) {
         this.view = view;
         this.editor = editor;
-        this.stage = stage;
     }
 
     public void init() {
@@ -33,9 +31,9 @@ public class ServerViewSubController {
             view = FXMLLoader.load(StageManager.class.getResource("view/MiniChatServer.fxml"));
             Scene scene = new Scene(view);
 
-            // display via StageManager
-            stage.setTitle("PMWS2021 - Mini Chat::Server");
-            stage.setScene(scene);
+            // display Scene
+            StageManager.stage.setTitle("PMWS2021 - Mini Chat::Server");
+            StageManager.stage.setScene(scene);
 
             // load all view references
             closeServerButton = (Button) view.lookup("#CloseServerButton");

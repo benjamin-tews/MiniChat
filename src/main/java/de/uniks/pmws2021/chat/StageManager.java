@@ -10,14 +10,14 @@ import javafx.stage.Stage;
 
 public class StageManager extends Application {
 
-    private static Stage stage;
-    //private static DungeonScreenController dungeonCtrl;
+    //ToDo: change back to private after implement methods
+    public static Stage stage;
     private static ChatEditor chatEditor = new ChatEditor();
     private static StartViewController startController;
 
     public static void showMiniChatStart() {
-      //  cleanup();
-        // show hero screen
+        cleanup();
+
         // load view
         try {
             Parent root = FXMLLoader.load(StageManager.class.getResource("view/MiniChatStart.fxml"));
@@ -26,7 +26,7 @@ public class StageManager extends Application {
             // editor
 
             // init controller
-            startController = new StartViewController(root, chatEditor, stage);
+            startController = new StartViewController(root, chatEditor);
             startController.init();
 
             // display
@@ -40,20 +40,25 @@ public class StageManager extends Application {
         }
     }
 
+    /*
+    //ToDo
+    public static void showMiniChatClient() {
 
-/*
+    }
+
+    public static void showMiniChatServer() {
+
+    }
+    */
+
     private static void cleanup() {
         // call cascading stop
-        if (dungeonCtrl != null) {
-            dungeonCtrl.stop();
-            dungeonCtrl = null;
-        }
-        if (heroCtrl != null) {
-            heroCtrl.stop();
-            heroCtrl = null;
+        if (startController != null) {
+            startController.stop();
+            startController = null;
         }
     }
-*/
+
     @Override
     public void start(Stage primaryStage) {
         // start application
@@ -65,7 +70,7 @@ public class StageManager extends Application {
     @Override
     public void stop() throws Exception {
         super.stop();
-    //    cleanup();
+        //    cleanup();
     }
 
     public ChatEditor getModel() {
