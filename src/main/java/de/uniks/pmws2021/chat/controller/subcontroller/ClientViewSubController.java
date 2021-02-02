@@ -18,10 +18,10 @@ import javafx.scene.control.TabPane;
 import javafx.scene.control.TextField;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
-import javafx.stage.Stage;
 
 public class ClientViewSubController {
 
+    private User model;
     private Parent view;
     private ChatEditor editor;
     private Button leaveChatButton;
@@ -33,54 +33,56 @@ public class ClientViewSubController {
     private AnchorPane allUserTabAnchorPane;
     private ObservableList<User> usersObservableList;
 
-    public ClientViewSubController(Parent view, ChatEditor editor) {
+    // ===========================================================================================
+    // CONTROLLER
+    // ===========================================================================================
+
+    public ClientViewSubController(User model, Parent view, ChatEditor editor) {
+        this.model = model;
         this.view = view;
         this.editor = editor;
     }
 
-
     public void init() {
-        // set view
-        try {
-            view = FXMLLoader.load(StageManager.class.getResource("view/MiniChatClient.fxml"));
-            Scene scene = new Scene(view);
+        // load all view references
+        leaveChatButton = (Button) view.lookup("#LeaveChatButton");
+        sendMsgButton = (Button) view.lookup("#SendMsgButton");
+        chatBoxTabPane = (TabPane) view.lookup("#ChatBoxTabPane");
+        allUserTab = view.lookup("#AllUserTab");
+        inputTextField = (TextField) view.lookup("#InputTextField");
+        chatListView = (ListView<User>) view.lookup("#ChatListView");
+        chatListView.setCellFactory(new chatListViewCellFactory());
+        allUserTabAnchorPane = (AnchorPane) view.lookup("#AllUserTabAnchorPane");
 
-            // display Scene
-            StageManager.stage.setTitle("PMWS2021 - Mini Chat::Client");
-            StageManager.stage.setScene(scene);
+        // set on mouse action
+        leaveChatButton.setOnAction(this::leaveChatButtonOnClick);
+        sendMsgButton.setOnAction(this::sendMsgButtonOnClick);
+        inputTextField.setOnMouseClicked(this::inputTextFieldActivated);
+        allUserTab.setOnMouseClicked(this::allUserTabActivated);
+        chatListView.setOnMouseReleased(this::chatListViewOnDoubleClick);
 
-            // load all view references
-            leaveChatButton = (Button) view.lookup("#LeaveChatButton");
-            sendMsgButton = (Button) view.lookup("#SendMsgButton");
-            chatBoxTabPane = (TabPane) view.lookup("#ChatBoxTabPane");
-            allUserTab = view.lookup("#AllUserTab");
-            inputTextField = (TextField) view.lookup("#InputTextField");
-            chatListView = (ListView<User>) view.lookup("#ChatListView");
-            chatListView.setCellFactory(new chatListViewCellFactory());
-            allUserTabAnchorPane = (AnchorPane) view.lookup("#AllUserTabAnchorPane");
+        // ListView Init
+        usersObservableList = FXCollections.observableArrayList();
+        // load users
+        ResourceManager.loadServerUsers();
+        // add to list
+        usersObservableList.addAll(this.editor.getUserList());
+        // ToDo: unsafe operation - fix this
+        chatListView.setItems(usersObservableList);
 
-            // set on mouse action
-            leaveChatButton.setOnAction(this::leaveChatButtonOnClick);
-            sendMsgButton.setOnAction(this::sendMsgButtonOnClick);
-            inputTextField.setOnMouseClicked(this::inputTextFieldActivated);
-            allUserTab.setOnMouseClicked(this::allUserTabActivated);
-            chatListView.setOnMouseReleased(this::chatListViewOnDoubleClick);
-
-            // List View
-            usersObservableList = FXCollections.observableArrayList();
-            // load users
-            ResourceManager.loadServerUsers();
-            // add to list
-            usersObservableList.addAll(this.editor.getUserList());
-            // ToDo: unsafe operation - fix this
-            chatListView.setItems(usersObservableList);
-
-        } catch (Exception e) {
-            System.err.println("Failed to load Chat Client :: ClientViewSubController init()");
-            e.printStackTrace();
-        }
+        // PCL
 
     }
+
+    public void stop() {
+        inputTextField.setOnAction(null);
+        leaveChatButton.setOnAction(null);
+        sendMsgButton.setOnAction(null);
+    }
+
+    // ===========================================================================================
+    // BUTTON ACTIONS
+    // ===========================================================================================
 
     private void chatListViewOnDoubleClick(MouseEvent event) {
         if (event.getClickCount() == 2) {
@@ -103,13 +105,17 @@ public class ClientViewSubController {
 
     private void leaveChatButtonOnClick(ActionEvent event) {
         System.out.println("Disconnect ClientView");
-        saveUsers();
+        saveUsersHelper();
         StageManager.showMiniChatStart();
     }
 
-    private void saveUsers() {
+    // ===========================================================================================
+    // SUBCONTROLLER INIT & HELPER
+    // ===========================================================================================
+
+    private void saveUsersHelper() {
         for (User user : this.editor.getUserList()
-             ) {
+        ) {
             ResourceManager.saveServerUsers(user);
         }
     }

@@ -1,6 +1,7 @@
 package de.uniks.pmws2021.chat;
 
 import de.uniks.pmws2021.chat.controller.StartViewController;
+import de.uniks.pmws2021.chat.controller.subcontroller.ClientViewSubController;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -10,8 +11,8 @@ import javafx.stage.Stage;
 
 public class StageManager extends Application {
 
-    //ToDo: change back to private after implement methods
     public static Stage stage;
+
     private static ChatEditor chatEditor = new ChatEditor();
     private static StartViewController startController;
 
@@ -35,21 +36,10 @@ public class StageManager extends Application {
             stage.centerOnScreen();
 
         } catch (Exception e) {
-            System.err.println("Failed to load Hero Screen :: showHeroScreen");
+            System.err.println("Failed to load MiniChatStart :: showMiniChatStart");
             e.printStackTrace();
         }
     }
-
-    /*
-    //ToDo
-    public static void showMiniChatClient() {
-
-    }
-
-    public static void showMiniChatServer() {
-
-    }
-    */
 
     private static void cleanup() {
         // call cascading stop
@@ -70,10 +60,10 @@ public class StageManager extends Application {
     @Override
     public void stop() throws Exception {
         super.stop();
-        //    cleanup();
     }
 
     public ChatEditor getModel() {
         return chatEditor;
     }
+
 }

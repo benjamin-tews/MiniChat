@@ -1,5 +1,6 @@
 package de.uniks.pmws2021.chat;
 
+import de.uniks.pmws2021.chat.controller.subcontroller.ServerViewSubController;
 import de.uniks.pmws2021.chat.model.*;
 
 import java.util.ArrayList;
@@ -39,4 +40,7 @@ public class ChatEditor {
         User dummyUser2 = haveUser("dummy 2");
     }
 
+    public Chat getChatServerList() {
+        return null;
+    }
 }
