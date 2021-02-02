@@ -2,7 +2,6 @@ package de.uniks.pmws2021.chat.util;
 
 import de.uniks.pmws2021.chat.model.User;
 import org.fulib.yaml.YamlIdMap;
-
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -68,7 +67,8 @@ public class ResourceManager {
             // load all existing users
             List<User> oldUsers = loadServerUsers();
 
-            oldUsers.removeIf(User -> oldUsers.contains(user));
+            // if user already in list dont save it
+            oldUsers.removeIf(oldUser -> oldUser.getName().equals(user.getName()));
 
             // add copy to list
             oldUsers.add(user);
@@ -82,6 +82,6 @@ public class ResourceManager {
             System.out.println("Error saving user");
             e.printStackTrace();
         }
-
     }
+
 }

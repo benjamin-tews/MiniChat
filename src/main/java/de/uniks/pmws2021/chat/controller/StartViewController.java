@@ -81,10 +81,7 @@ public class StartViewController {
         dialog.setTitle("New User");
         dialog.setHeaderText("Pls create a new user.");
         dialog.setContentText("Username: ");
-
-        // ToDo: remove some dummies later
-        this.editor.createDummies();
-        dialog.showAndWait().ifPresent(name -> initClientViewSubcontroller(this.editor.haveUser(name)));
+        dialog.showAndWait().ifPresent(name -> initClientViewSubcontroller(this.editor.haveUser(name.toString(), "127.0.0.1")));
     }
 
     private void serverButtonOnClick(ActionEvent event) {
@@ -146,7 +143,7 @@ public class StartViewController {
     private void loadUsersHelper() {
         for (User user : ResourceManager.loadServerUsers()
         ) {
-            this.editor.haveUser(user.getName());
+            this.editor.haveUser(user.getName(),"127.0.0.1");
         }
     }
 

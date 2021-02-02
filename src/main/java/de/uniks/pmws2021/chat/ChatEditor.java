@@ -12,7 +12,7 @@ public class ChatEditor {
     // USER
     // ===========================================================================================
 
-    public User haveUser(String name) {
+    public User haveUser(String name, String ip) {
         for (User user : userList) {
             if (user.getName().equals(name)) {
                 return user;
@@ -21,23 +21,13 @@ public class ChatEditor {
         User user = new User();
         user.setName(name);
         // placeholder... ToDo maybe overload later
-        user.setIp("127.0.0.1");
+        user.setIp(ip);
         userList.add(user);
         return user;
     }
 
-
     public ArrayList<User> getUserList() {
         return userList;
-    }
-
-    // ===========================================================================================
-    // DUMMIES
-    // ===========================================================================================
-
-    public void createDummies() {
-        User dummyUser1 = haveUser("dummy 1");
-        User dummyUser2 = haveUser("dummy 2");
     }
 
     public Chat getChatServerList() {

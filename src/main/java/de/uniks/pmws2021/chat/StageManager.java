@@ -1,7 +1,6 @@
 package de.uniks.pmws2021.chat;
 
 import de.uniks.pmws2021.chat.controller.StartViewController;
-import de.uniks.pmws2021.chat.controller.subcontroller.ClientViewSubController;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -18,7 +17,6 @@ public class StageManager extends Application {
 
     public static void showMiniChatStart() {
         cleanup();
-
         // load view
         try {
             Parent root = FXMLLoader.load(StageManager.class.getResource("view/MiniChatStart.fxml"));
@@ -60,10 +58,9 @@ public class StageManager extends Application {
     @Override
     public void stop() throws Exception {
         super.stop();
+        cleanup();
     }
 
-    public ChatEditor getModel() {
-        return chatEditor;
-    }
+
 
 }
