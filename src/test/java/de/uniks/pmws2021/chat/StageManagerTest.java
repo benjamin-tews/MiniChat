@@ -59,7 +59,6 @@ public class StageManagerTest extends ApplicationTest {
 
             // input dialog
             write("Benjamin");
-            sleep(1000);
             type(TAB);
             type(ENTER);
 
