@@ -12,7 +12,6 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextInputDialog;
-
 import java.io.IOException;
 import java.util.ArrayList;
 
@@ -22,7 +21,6 @@ public class StartViewController {
     private final ChatEditor editor;
     private Button serverButton;
     private Button clientButton;
-    private ClientViewSubController clientViewSubController;
     private ArrayList<ServerViewSubController> serverViewSubControllerList = new ArrayList<>();
     private ArrayList<ClientViewSubController> clientViewSubControllerList = new ArrayList<>();
 
@@ -68,7 +66,6 @@ public class StartViewController {
         ) {
             subController.stop();
         }
-
     }
 
     // ===========================================================================================

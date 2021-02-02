@@ -57,7 +57,6 @@ public class ResourceManager {
         }
 
         return userList;
-
     }
 
     public static void saveServerUsers(User user) {

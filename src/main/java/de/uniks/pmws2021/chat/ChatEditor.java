@@ -1,8 +1,6 @@
 package de.uniks.pmws2021.chat;
 
-import de.uniks.pmws2021.chat.controller.subcontroller.ServerViewSubController;
 import de.uniks.pmws2021.chat.model.*;
-
 import java.util.ArrayList;
 
 public class ChatEditor {
