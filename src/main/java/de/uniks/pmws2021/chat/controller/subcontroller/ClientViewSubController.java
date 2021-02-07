@@ -63,8 +63,6 @@ public class ClientViewSubController {
 
         // ListView Init
         usersObservableList = FXCollections.observableArrayList();
-        // load users
-        ResourceManager.loadServerUsers();
         // add to list
         usersObservableList.addAll(this.editor.getUserList());
         // ToDo: unsafe operation - fix this

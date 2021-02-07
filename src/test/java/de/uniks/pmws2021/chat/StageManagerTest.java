@@ -1,5 +1,8 @@
 package de.uniks.pmws2021.chat;
 
+import de.uniks.pmws2021.chat.model.Chat;
+import de.uniks.pmws2021.chat.network.server.ChatServer;
+import de.uniks.pmws2021.chat.network.server.websocket.ChatSocket;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;

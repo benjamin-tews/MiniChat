@@ -2,9 +2,10 @@ package de.uniks.pmws2021.chat;
 
 import de.uniks.pmws2021.chat.model.*;
 import java.util.ArrayList;
+import java.util.List;
 
 public class ChatEditor {
-    private ArrayList<User> userList = new ArrayList<>();
+    public ArrayList<User> userList = new ArrayList<>();
 
     // ===========================================================================================
     // USER
@@ -18,17 +19,34 @@ public class ChatEditor {
         }
         User user = new User();
         user.setName(name);
-        // placeholder... ToDo maybe overload later
         user.setIp(ip);
         userList.add(user);
         return user;
     }
 
-    public ArrayList<User> getUserList() {
+    // overload haveUser
+    public User haveUser(User newUser) {
+        for (User user : userList) {
+            if (user.getName().equals(newUser.getName())) {
+                return user;
+            }
+        }
+        User user = new User();
+        user.setName(newUser.getName());
+        user.setIp(newUser.getIp());
+        user.setStatus(newUser.getStatus());
+        user.setChat(newUser.getChat());
+        userList.add(user);
+        return user;
+    }
+
+
+    public List<User> getUserList() {
         return userList;
     }
 
     public Chat getChatServerList() {
         return null;
     }
+
 }

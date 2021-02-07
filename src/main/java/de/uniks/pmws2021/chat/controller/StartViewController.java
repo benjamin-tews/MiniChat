@@ -4,7 +4,9 @@ import de.uniks.pmws2021.chat.ChatEditor;
 import de.uniks.pmws2021.chat.StageManager;
 import de.uniks.pmws2021.chat.controller.subcontroller.ClientViewSubController;
 import de.uniks.pmws2021.chat.controller.subcontroller.ServerViewSubController;
+import de.uniks.pmws2021.chat.model.Chat;
 import de.uniks.pmws2021.chat.model.User;
+import de.uniks.pmws2021.chat.network.server.ChatServer;
 import de.uniks.pmws2021.chat.util.ResourceManager;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXMLLoader;
@@ -23,6 +25,7 @@ public class StartViewController {
     private Button clientButton;
     private ArrayList<ServerViewSubController> serverViewSubControllerList = new ArrayList<>();
     private ArrayList<ClientViewSubController> clientViewSubControllerList = new ArrayList<>();
+    private ChatServer chatServer;
 
     // ===========================================================================================
     // CONTROLLER
@@ -124,7 +127,7 @@ public class StartViewController {
             StageManager.stage.setTitle("PMWS2021 - Mini Chat::Server");
             StageManager.stage.setScene(scene);
 
-            ServerViewSubController serverViewSubController = new ServerViewSubController(this.editor.getChatServerList(), view, this.editor);
+            ServerViewSubController serverViewSubController = new ServerViewSubController(view, this.editor);
             serverViewSubController.init();
 
             // add subcontroller to list of controllers for removal
@@ -140,7 +143,7 @@ public class StartViewController {
     private void loadUsersHelper() {
         for (User user : ResourceManager.loadServerUsers()
         ) {
-            this.editor.haveUser(user.getName(),"127.0.0.1");
+            this.editor.haveUser(user.getName(), user.getIp()).setStatus(user.getStatus());
         }
     }
 
