@@ -24,6 +24,15 @@ public class ChatEditor {
         return user;
     }
 
+    public User getUser (String name) {
+        for (User user : userList) {
+            if (user.getName().equals(name)) {
+                return user;
+            }
+        }
+        return null;
+    }
+
     // overload haveUser
     public User haveUser(User newUser) {
         for (User user : userList) {
