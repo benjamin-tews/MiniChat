@@ -48,6 +48,7 @@ public class StageManagerTest extends ApplicationTest {
 
             // check buttons
             clickOn(disconnectAllButton);
+            // ToDo
             //clickOn(disconnectOneButton);
             clickOn(closeServerButton);
 
