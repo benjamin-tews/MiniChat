@@ -135,6 +135,10 @@ public class ChatSocket {
             // get channel identifier
             String channel = parse.getString(COM_CHANNEL);
 
+            // build answer message (channel, from, message)
+            // ToDO: something to be done?
+
+
             // Check if the message is public or private
             // if message is public, send message to every client
             // check if session is open before sending message

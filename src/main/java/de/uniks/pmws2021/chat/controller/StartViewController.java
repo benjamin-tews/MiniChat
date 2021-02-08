@@ -81,7 +81,7 @@ public class StartViewController {
         dialog.setTitle("New User");
         dialog.setHeaderText("Pls create a new user.");
         dialog.setContentText("Username: ");
-        dialog.showAndWait().ifPresent(name -> initClientViewSubcontroller(this.editor.haveUser(name.toString(), "127.0.0.1")));
+        dialog.showAndWait().ifPresent(name -> initClientViewSubcontroller(this.editor.haveUser(name.toString(), "127.0.0.1").setStatus(true)));
     }
 
     private void serverButtonOnClick(ActionEvent event) {

@@ -19,6 +19,8 @@ public class chatListViewCellFactory implements javafx.util.Callback<ListView<Us
             if (!empty){
                 // makes my listView more sexy
                 this.setText(item.getName() +" [" +(item.getStatus()?"online":"offline") +"]");
+            } else {
+                this.setText("");
             }
         }
     }

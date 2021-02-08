@@ -20,6 +20,7 @@ public class ChatEditor {
         User user = new User();
         user.setName(name);
         user.setIp(ip);
+        user.setStatus(false);
         userList.add(user);
         return user;
     }

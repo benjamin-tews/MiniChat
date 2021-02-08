@@ -15,6 +15,8 @@ import javafx.scene.Parent;
 import javafx.scene.control.Button;
 import javafx.scene.control.ListView;
 
+import java.beans.PropertyChangeEvent;
+
 public class ServerViewSubController {
     private Chat model;
     private Parent view;
@@ -59,16 +61,21 @@ public class ServerViewSubController {
         memberListView.setItems(usersObservableList);
 
         // PCL
+     //   this.model.addPropertyChangeListener(User.PROPERTY_STATUS, this::onUserStatusChanged);
 
         // ChatServer
         chatServer = new ChatServer(model, this.editor);
 
     }
 
+   // private void onUserStatusChanged(PropertyChangeEvent event) {
+  //  }
+
     public void stop() {
         closeServerButton.setOnAction(null);
         disconnectAllButton.setOnAction(null);
         disconnectOneButton.setOnAction(null);
+        chatServer.stopServer();
     }
 
     // ===========================================================================================
@@ -87,8 +94,6 @@ public class ServerViewSubController {
         System.out.println("Disconnect ServerView");
         // save users
         saveUsersHelper();
-        // stop server
-        chatServer.stopServer();
         // show start screen
         StageManager.showMiniChatStart();
     }

@@ -16,6 +16,7 @@ import javax.json.JsonObject;
 import java.util.ArrayList;
 import java.util.List;
 
+import static de.uniks.pmws2021.chat.Constants.*;
 import static de.uniks.pmws2021.chat.util.ServerResponse.SUCCESS;
 
 public class UserController {
@@ -63,10 +64,10 @@ public class UserController {
         }
 
         // parse request body
-        JsonObject bodyJson = JsonUtil.parse(body);
+        JsonObject parse = JsonUtil.parse(body);
 
         // get name from body
-        String userName = JsonUtil.parseUser(bodyJson).getName();
+        String userName = parse.getString(COM_NAME);
 
         // check if user already logged in, if yes, return with error message
         if (this.editor.haveUser(userName, req.ip()).getStatus()) {
@@ -78,6 +79,9 @@ public class UserController {
 
         // set user online and save ip
         this.editor.haveUser(userName, req.ip()).setStatus(true);
+
+        // send login websocket message
+        chatSocket.sendUserJoined(this.editor.haveUser(userName, req.ip()));
 
         // send response that everything went fine
         res.status(200);
@@ -95,10 +99,10 @@ public class UserController {
             return JsonUtil.stringify(err);
         }
 
-        JsonObject bodyJson = JsonUtil.parse(body);
+        JsonObject parse = JsonUtil.parse(body);
 
         // get user by name
-        String userName = JsonUtil.parseUser(bodyJson).getName();
+        String userName = parse.getString(COM_NAME);
 
         // check if user already logged out, if yes, return with error message
         if (!(this.editor.haveUser(userName, req.ip()).getStatus())) {
@@ -109,13 +113,13 @@ public class UserController {
         }
 
         // end websocket connection of user
-        chatSocket.killConnection(JsonUtil.parseUser(bodyJson), res.toString());
+        chatSocket.killConnection(this.editor.haveUser(userName, req.ip()), res.toString());
 
         // set user offline
         this.editor.haveUser(userName, req.ip()).setStatus(false);
 
         // send logout websocket message
-        chatSocket.sendUserLeft(JsonUtil.parseUser(bodyJson));
+        chatSocket.sendUserLeft(this.editor.haveUser(userName, req.ip()));
 
         // send response that everything went fine
         res.status(200);
