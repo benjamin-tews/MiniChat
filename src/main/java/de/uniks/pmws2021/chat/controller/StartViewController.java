@@ -127,7 +127,8 @@ public class StartViewController {
             StageManager.stage.setTitle("PMWS2021 - Mini Chat::Server");
             StageManager.stage.setScene(scene);
 
-            ServerViewSubController serverViewSubController = new ServerViewSubController(view, this.editor);
+            Chat chat = new Chat();
+            ServerViewSubController serverViewSubController = new ServerViewSubController(chat, view, this.editor);
             serverViewSubController.init();
 
             // add subcontroller to list of controllers for removal

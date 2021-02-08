@@ -1,19 +1,22 @@
 package de.uniks.pmws2021.chat.controller.subcontroller;
 
-import com.sun.javafx.charts.Legend;
 import de.uniks.pmws2021.chat.ChatEditor;
 import de.uniks.pmws2021.chat.StageManager;
 import de.uniks.pmws2021.chat.model.Chat;
 import de.uniks.pmws2021.chat.model.User;
 import de.uniks.pmws2021.chat.network.server.ChatServer;
+import de.uniks.pmws2021.chat.network.server.controller.UserController;
+import de.uniks.pmws2021.chat.network.server.websocket.ChatSocket;
 import de.uniks.pmws2021.chat.util.ResourceManager;
 import de.uniks.pmws2021.chat.view.chatListViewCellFactory;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.scene.Parent;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ListView;
+import javafx.scene.input.MouseEvent;
 
 import java.beans.PropertyChangeEvent;
 
@@ -27,12 +30,14 @@ public class ServerViewSubController {
     private ListView<User> memberListView;
     private ChatServer chatServer;
     private ObservableList<User> usersObservableList;
+    private User userData;
 
     // ===========================================================================================
     // CONTROLLER
     // ===========================================================================================
 
-    public ServerViewSubController(Parent view, ChatEditor editor) {
+    public ServerViewSubController(Chat model, Parent view, ChatEditor editor) {
+        this.model = model;
         this.view = view;
         this.editor = editor;
     }
@@ -50,26 +55,33 @@ public class ServerViewSubController {
         closeServerButton.setOnAction(this::closeServerButtonOnClick);
         disconnectAllButton.setOnAction(this::disconnectAllButtonOnClick);
         disconnectOneButton.setOnAction(this::disconnectOneButtonOnClick);
+        memberListView.setOnMouseReleased(this::memberListViewOnClick);
 
         // ListView Init
         usersObservableList = FXCollections.observableArrayList();
-        // load users
-        ResourceManager.loadServerUsers();
         // add to list
         usersObservableList.addAll(this.editor.getUserList());
         // ToDo: unsafe operation - fix this
         memberListView.setItems(usersObservableList);
 
         // PCL
-     //   this.model.addPropertyChangeListener(User.PROPERTY_STATUS, this::onUserStatusChanged);
+
+        // listener for every single user in list
+        for (User user : this.editor.getUserList()
+        ) {
+            user.addPropertyChangeListener(user.PROPERTY_STATUS, this::onUserStatusChanged);
+        }
+
+        // ToDo listener for list
 
         // ChatServer
         chatServer = new ChatServer(model, this.editor);
 
     }
 
-   // private void onUserStatusChanged(PropertyChangeEvent event) {
-  //  }
+    private void onUserStatusChanged(PropertyChangeEvent event) {
+        memberListView.refresh();
+    }
 
     public void stop() {
         closeServerButton.setOnAction(null);
@@ -82,12 +94,27 @@ public class ServerViewSubController {
     // BUTTON ACTIONS
     // ===========================================================================================
 
+    private void memberListViewOnClick(MouseEvent event) {
+        if (event.getClickCount() == 1) {
+            userData = memberListView.getFocusModel().getFocusedItem();
+        }
+    }
+
     private void disconnectAllButtonOnClick(ActionEvent event) {
+        chatServer.stopServer();
         System.out.println("Disconnect all Users");
     }
 
     private void disconnectOneButtonOnClick(ActionEvent event) {
-        System.out.println("Disconnect one Users");
+        if (userData != null) {
+            chatServer.disconnectUser(userData);
+        } else {
+            Alert fail = new Alert(Alert.AlertType.WARNING);
+            fail.setHeaderText("No user Selected");
+            fail.setContentText("Please select user first");
+            fail.showAndWait();
+        }
+        System.out.println("Disconnect User: " +userData.getName());
     }
 
     private void closeServerButtonOnClick(ActionEvent event) {
