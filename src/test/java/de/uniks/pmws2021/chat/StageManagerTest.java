@@ -48,7 +48,7 @@ public class StageManagerTest extends ApplicationTest {
 
             // check buttons
             clickOn(disconnectAllButton);
-            clickOn(disconnectOneButton);
+            //clickOn(disconnectOneButton);
             clickOn(closeServerButton);
 
         // CHAT START VIEW
