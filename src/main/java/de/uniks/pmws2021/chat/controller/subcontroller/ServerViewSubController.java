@@ -17,6 +17,7 @@ import javafx.scene.control.ListView;
 import javafx.scene.input.MouseEvent;
 
 import java.beans.PropertyChangeEvent;
+import java.util.List;
 
 public class ServerViewSubController {
     private Chat model;
@@ -99,7 +100,11 @@ public class ServerViewSubController {
     }
 
     private void disconnectAllButtonOnClick(ActionEvent event) {
-        chatServer.stopServer();
+        for (User user : usersObservableList
+        ) {
+            chatServer.disconnectUser(user);
+        }
+
         System.out.println("Disconnect all Users");
     }
 
@@ -112,7 +117,7 @@ public class ServerViewSubController {
             fail.setContentText("Please select user first");
             fail.showAndWait();
         }
-        System.out.println("Disconnect User: " +userData.getName());
+        System.out.println("Disconnect User: " + userData.getName());
     }
 
     private void closeServerButtonOnClick(ActionEvent event) {

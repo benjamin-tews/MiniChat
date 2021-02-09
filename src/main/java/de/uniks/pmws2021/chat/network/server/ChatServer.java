@@ -7,6 +7,7 @@ import de.uniks.pmws2021.chat.network.server.controller.UserController;
 import de.uniks.pmws2021.chat.network.server.websocket.ChatSocket;
 
 import java.io.EOFException;
+import java.util.List;
 
 import static de.uniks.pmws2021.chat.Constants.*;
 import static spark.Spark.*;
@@ -40,6 +41,8 @@ public class ChatServer {
         before("*", ((request, response) -> response.header("Content-Type", "application/json")));
 
         // define routes with api prefix
+        // define endpoints under user path
+
         path(API_PREFIX, () -> {
             path(USERS_PATH, () -> {
                 get("", userController::getAllLoggedInUsers);
@@ -47,9 +50,6 @@ public class ChatServer {
                 post(LOGOUT_PATH, userController::logout);
             });
         });
-
-        // define endpoints under user path
-
 
         // error handling
         notFound((request, response) -> "404 - User not found");
@@ -67,6 +67,7 @@ public class ChatServer {
     public void disconnectUser(User user) {
         // disconnect given user
         chatSocket.killConnection(user, "Disconnect");
+        user.setStatus(false);
     }
 
     public void stopServer() {
