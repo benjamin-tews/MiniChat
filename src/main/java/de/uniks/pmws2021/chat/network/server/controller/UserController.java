@@ -75,17 +75,18 @@ public class UserController {
             res.status(403);
             err = new ServerResponse(ServerResponse.FAILURE, "User already logged on");
             return JsonUtil.stringify(err);
+        } else {
+
+            // set user online and save ip
+            this.editor.haveUser(userName, req.ip()).setStatus(true);
+
+            // send login websocket message
+            chatSocket.sendUserJoined(this.editor.haveUser(userName, req.ip()));
+
+            // send response that everything went fine
+            res.status(200);
+            return JsonUtil.stringify(new ServerResponse(SUCCESS, JsonUtil.buildOkLogin()));
         }
-
-        // set user online and save ip
-        this.editor.haveUser(userName, req.ip()).setStatus(true);
-
-        // send login websocket message
-        chatSocket.sendUserJoined(this.editor.haveUser(userName, req.ip()));
-
-        // send response that everything went fine
-        res.status(200);
-        return JsonUtil.stringify(new ServerResponse(SUCCESS, JsonUtil.buildOkLogin()));
     }
 
     public String logout(Request req, Response res) {
