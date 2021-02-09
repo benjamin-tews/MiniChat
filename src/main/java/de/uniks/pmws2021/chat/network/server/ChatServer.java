@@ -49,17 +49,7 @@ public class ChatServer {
         });
 
         // define endpoints under user path
-        // login
-        // logout
 
-        // get all logged in users
-        //get("/api/users", userController::getAllLoggedInUsers);
-
-        // user login
-        //post("/api/users/login", userController::login);
-
-        // user logout
-        //post("/api/users/logout", userController::logout);
 
         // error handling
         notFound((request, response) -> "404 - User not found");

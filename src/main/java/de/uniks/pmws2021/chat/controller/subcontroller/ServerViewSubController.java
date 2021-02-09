@@ -5,8 +5,6 @@ import de.uniks.pmws2021.chat.StageManager;
 import de.uniks.pmws2021.chat.model.Chat;
 import de.uniks.pmws2021.chat.model.User;
 import de.uniks.pmws2021.chat.network.server.ChatServer;
-import de.uniks.pmws2021.chat.network.server.controller.UserController;
-import de.uniks.pmws2021.chat.network.server.websocket.ChatSocket;
 import de.uniks.pmws2021.chat.util.ResourceManager;
 import de.uniks.pmws2021.chat.view.chatListViewCellFactory;
 import javafx.collections.FXCollections;

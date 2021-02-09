@@ -10,7 +10,6 @@ import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.annotations.*;
 
 import javax.json.JsonObject;
-import javax.json.JsonValue;
 import java.io.EOFException;
 import java.io.IOException;
 import java.util.LinkedHashMap;
@@ -38,16 +37,15 @@ public class ChatSocket {
     public void onNewConnection(Session session) throws IOException {
         // get user name from session request header
         String name = session.getUpgradeRequest().getHeader(COM_NAME);
-        User user = this.editor.getUser(name);
 
         if (name != null && !name.isEmpty()) {
             // check if user has logged in
-            if (user.getStatus()) {
+            if (this.editor.getUser(name).getStatus()) {
                 // if yes, store user with his session and add session to clients
                 userSessionMap.put(name, session);
                 clients.add(session);
                 // also send a system message that the user has logged in
-                sendSystemMessage(JsonUtil.buildUserJoinedSystemMessage(user).toString());
+                sendUserJoined(this.editor.getUser(name));
             } else {
                 // if not, send response that the user has to log in first and close session
                 session.getRemote().sendString(JsonUtil.stringify(new ServerResponse(ServerResponse.FAILURE, "User has to login first")));
@@ -63,28 +61,23 @@ public class ChatSocket {
 
     @OnWebSocketClose
     public void onConnectionClose(Session session, int statusCode, String reason) {
-        // just some logging
-        System.out.println("Chat session closed, because of " + reason);
 
         // if user is logged in remove session and send system message to notify all about logout
-
         if (userSessionMap.containsKey(session)) {
-            session.close();
-            userSessionMap.remove(session);
-            // ToDo: Build message ...
-            for (Session blah : clients
-            ) {
-                try {
-                    blah.getRemote().sendString(JsonUtil.buildPublicChatMessage("Session: " + session.toString() + " closed").toString());
-                } catch (IOException e) {
-                    e.printStackTrace();
+
+            String userName = session.getUpgradeRequest().getHeader(COM_FROM);
+
+            for (Map.Entry<String, Session> entry : userSessionMap.entrySet()) {
+                // if session in userSessionMap and if its open
+                if (entry.getValue().equals(session) && entry.getValue().isOpen()) {
+                    killConnection(this.editor.getUser((entry.getKey())), reason);
+                    userSessionMap.remove(session);
+                    clients.remove(session);
+                    sendUserLeft(this.editor.getUser(userName));
                 }
             }
-            try {
-                session.getRemote().sendString(JsonUtil.buildPublicChatMessage("Session: " + session.toString() + " closed").toString());
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+        } else {
+            System.err.println("User not connected");
         }
     }
 
@@ -119,25 +112,18 @@ public class ChatSocket {
                 }
             }
 
-            // get user name (from)
-            String userName = session.getUpgradeRequest().getHeader(COM_FROM);
-
-            /*
-            for(Map.Entry<String, Session> entry : userSessionMap.entrySet()){
-                if( entry.getValue().equals(session) ){
-                    userName = entry.getKey();
-                }
-            }*/
 
             // parse string message to json
             JsonObject parse = JsonUtil.parse(message);
+
+            // get user name (from)
+            String userName = session.getUpgradeRequest().getHeader(COM_FROM);
 
             // get channel identifier
             String channel = parse.getString(COM_CHANNEL);
 
             // build answer message (channel, from, message)
-            // ToDO: something to be done?
-
+            String answerMessage = parse.getString(COM_MSG);
 
             // Check if the message is public or private
             // if message is public, send message to every client
@@ -145,16 +131,25 @@ public class ChatSocket {
             if (channel.equals(COM_CHANNEL_ALL)) {
                 // public message
                 if (session.isOpen()) {
-                    sendSystemMessage(message);
+                    sendSystemMessage(answerMessage);
                 }
             } else {
                 // if message is private
                 // lookup session of receiving user
                 String receivingUser = parse.getString(COM_TO);
+                Session receivingUserSession = null;
+
+                for (Map.Entry<String, Session> entry : userSessionMap.entrySet()) {
+                    if (entry.getKey().equals(receivingUser)) {
+                        receivingUserSession = entry.getValue();
+                    }
+                }
+
                 // check if session is open
-                if (session.isOpen()) {
+                assert receivingUserSession != null;
+                if (receivingUserSession.isOpen()) {
                     // send message to the receiver
-                    session.getRemote().sendString(JsonUtil.buildPrivateChatMessage(message, receivingUser).toString());
+                    receivingUserSession.getRemote().sendString(JsonUtil.buildPrivateChatMessage(answerMessage, receivingUser).toString());
                 }
             }
 
@@ -165,14 +160,30 @@ public class ChatSocket {
     }
 
     public void sendUserJoined(User user) {
-        // send system message with data
-        JsonUtil.buildUserJoinedSystemMessage(user);
+        // ToDo: use sendSystemMessage()
+        for (Session session : clients
+        ) {
+            try {
+                session.getRemote().sendString(JsonUtil.buildUserJoinedSystemMessage(user).toString());
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
+
     public void sendUserLeft(User user) {
-        // send system message with data
-        JsonUtil.buildUserLeftSystemMessage(user);
+        // ToDo: use sendSystemMessage()
+        for (Session session : clients
+        ) {
+            try {
+                session.getRemote().sendString(JsonUtil.buildUserLeftSystemMessage(user).toString());
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
     }
+
 
     public void killConnection(User user, String reason) {
         // get session of user, remove from lists and close it (if open)
@@ -180,10 +191,9 @@ public class ChatSocket {
             Session userSession = userSessionMap.get(user.getName());
             userSessionMap.remove(userSession);
             if (userSession.isOpen()) {
-                userSession.close();
+                userSession.close(); // calls implicit onConnectionClose
             }
         }
-        sendSystemMessage(user + "s' Session killed: " + reason);
     }
 
     private void sendSystemMessage(String message) {
