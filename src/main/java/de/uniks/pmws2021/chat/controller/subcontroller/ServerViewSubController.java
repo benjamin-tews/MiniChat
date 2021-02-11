@@ -17,7 +17,6 @@ import javafx.scene.control.ListView;
 import javafx.scene.input.MouseEvent;
 
 import java.beans.PropertyChangeEvent;
-import java.util.List;
 
 public class ServerViewSubController {
     private Chat model;
@@ -72,10 +71,17 @@ public class ServerViewSubController {
         }
 
         // ToDo listener for list
+        model.addPropertyChangeListener(Chat.PROPERTY_AVAILABLE_USER, this::onUserListChanged);
 
         // ChatServer
         chatServer = new ChatServer(model, this.editor);
 
+    }
+
+    private void onUserListChanged(PropertyChangeEvent event) {
+        usersObservableList.clear();
+        usersObservableList.add(userData);
+        memberListView.refresh();
     }
 
     private void onUserStatusChanged(PropertyChangeEvent event) {
@@ -86,6 +92,12 @@ public class ServerViewSubController {
         closeServerButton.setOnAction(null);
         disconnectAllButton.setOnAction(null);
         disconnectOneButton.setOnAction(null);
+
+        for (User user : this.editor.getUserList()
+        ) {
+            user.removePropertyChangeListener(user.PROPERTY_STATUS, this::onUserStatusChanged);
+        }
+
         chatServer.stopServer();
     }
 

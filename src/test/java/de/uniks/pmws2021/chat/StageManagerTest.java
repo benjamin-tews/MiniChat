@@ -1,9 +1,12 @@
 package de.uniks.pmws2021.chat;
 
 import de.uniks.pmws2021.chat.model.Chat;
+import de.uniks.pmws2021.chat.model.User;
 import de.uniks.pmws2021.chat.network.server.ChatServer;
 import de.uniks.pmws2021.chat.network.server.websocket.ChatSocket;
+import javafx.scene.Node;
 import javafx.scene.control.Button;
+import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 import org.junit.Assert;
@@ -33,36 +36,13 @@ public class StageManagerTest extends ApplicationTest {
         Assert.assertEquals("PMWS2021 - Mini Chat", stage.getTitle());
 
             // init buttons
-            Button serverButton = lookup("#ServerButton").query();
-
-            // check buttons
-            clickOn(serverButton);
-
-        // SERVER SUB VIEW
-        Assert.assertEquals("PMWS2021 - Mini Chat::Server", stage.getTitle());
-
-            // init buttons
-            Button disconnectAllButton = lookup("#DisconnectAllButton").query();
-            Button disconnectOneButton = lookup("#DisconnectOneButton").query();
-            Button closeServerButton = lookup("#CloseServerButton").query();
-
-            // check buttons
-            clickOn(disconnectAllButton);
-            // ToDo
-            //clickOn(disconnectOneButton);
-            clickOn(closeServerButton);
-
-        // CHAT START VIEW
-        Assert.assertEquals("PMWS2021 - Mini Chat", stage.getTitle());
-
-            // init buttons
             Button clientButton = lookup("#ClientButton").query();
 
             // check buttons
             clickOn(clientButton);
 
             // input dialog
-            write("Benjamin");
+            write("Albert");
             type(TAB);
             type(ENTER);
 
@@ -82,6 +62,30 @@ public class StageManagerTest extends ApplicationTest {
             clickOn(sendMsgButton);
             Assert.assertTrue(inputTextField.getText().isEmpty());
             clickOn(leaveChatButton);
+
+        // CHAT START VIEW
+        Assert.assertEquals("PMWS2021 - Mini Chat", stage.getTitle());
+
+        // init buttons
+        Button serverButton = lookup("#ServerButton").query();
+
+        // check buttons
+        clickOn(serverButton);
+
+        // SERVER SUB VIEW
+            Assert.assertEquals("PMWS2021 - Mini Chat::Server", stage.getTitle());
+
+            // init buttons
+            Button disconnectAllButton = lookup("#DisconnectAllButton").query();
+            Button disconnectOneButton = lookup("#DisconnectOneButton").query();
+            Button closeServerButton = lookup("#CloseServerButton").query();
+            ListView<User> memberListView = lookup("#MemberListView").query();
+
+            // check buttons
+            clickOn(disconnectAllButton);
+            clickOn(memberListView);
+            clickOn(disconnectOneButton);
+            clickOn(closeServerButton);
 
         // CHAT START VIEW
         Assert.assertEquals("PMWS2021 - Mini Chat", stage.getTitle());
