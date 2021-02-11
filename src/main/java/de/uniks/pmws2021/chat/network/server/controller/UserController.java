@@ -12,11 +12,10 @@ import spark.Response;
 
 import javax.json.JsonArray;
 import javax.json.JsonObject;
-
 import java.util.ArrayList;
 import java.util.List;
 
-import static de.uniks.pmws2021.chat.Constants.*;
+import static de.uniks.pmws2021.chat.Constants.COM_NAME;
 import static de.uniks.pmws2021.chat.util.ServerResponse.SUCCESS;
 
 public class UserController {
@@ -44,7 +43,7 @@ public class UserController {
         if (users.isEmpty()) {
             ServerResponse err = new ServerResponse(ServerResponse.FAILURE, "No users online");
             return JsonUtil.stringify(err);
-        } else  {
+        } else {
             JsonArray bodyResult = JsonUtil.usersToJson(users);
             res.status(200);
             return JsonUtil.stringify(new ServerResponse(SUCCESS, bodyResult));
@@ -69,8 +68,13 @@ public class UserController {
         // get name from body
         String userName = parse.getString(COM_NAME);
 
+        // if user doesn't exist
+        if (this.editor.getUser(userName) == null) {
+            this.editor.haveUser(userName);
+        }
+
         // check if user already logged in, if yes, return with error message
-        if (this.editor.haveUser(userName, req.ip()).getStatus()) {
+        if (this.editor.getUser(userName).getStatus()) {
             // Forbidden
             res.status(403);
             err = new ServerResponse(ServerResponse.FAILURE, "User already logged on");
@@ -78,10 +82,11 @@ public class UserController {
         } else {
 
             // set user online and save ip
-            this.editor.haveUser(userName, req.ip()).setStatus(true);
+            this.editor.getUser(userName).setStatus(true).setIp(req.ip());
+            this.model.withAvailableUser(this.editor.getUser(userName));
 
             // send login websocket message
-            chatSocket.sendUserJoined(this.editor.haveUser(userName, req.ip()));
+            chatSocket.sendUserJoined(this.editor.getUser(userName));
 
             // send response that everything went fine
             res.status(200);
@@ -105,8 +110,10 @@ public class UserController {
         // get user by name
         String userName = parse.getString(COM_NAME);
 
+        this.editor.haveUser(userName);
+
         // check if user already logged out, if yes, return with error message
-        if (!(this.editor.haveUser(userName, req.ip()).getStatus())) {
+        if (!(this.editor.getUser(userName).getStatus())) {
             // Not Acceptable
             res.status(406);
             err = new ServerResponse(ServerResponse.FAILURE, "User already logged out");
@@ -114,13 +121,13 @@ public class UserController {
         }
 
         // end websocket connection of user
-        chatSocket.killConnection(this.editor.haveUser(userName, req.ip()), res.toString());
+        chatSocket.killConnection(this.editor.getUser(userName), res.toString());
 
         // set user offline
-        this.editor.haveUser(userName, req.ip()).setStatus(false);
+        this.editor.getUser(userName).setStatus(false);
 
         // send logout websocket message
-        chatSocket.sendUserLeft(this.editor.haveUser(userName, req.ip()));
+        chatSocket.sendUserLeft(this.editor.getUser(userName));
 
         // send response that everything went fine
         res.status(200);

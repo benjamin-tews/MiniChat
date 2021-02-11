@@ -16,7 +16,7 @@ public class ChatEditor {
     // USER
     // ===========================================================================================
 
-    public User haveUser(String name, String ip) {
+    public User haveUser(String name) {
         for (User user : userList) {
             if (user.getName().equals(name)) {
                 return user;
@@ -25,7 +25,6 @@ public class ChatEditor {
         // new user
         User user = new User();
         user.setName(name);
-        user.setIp(ip);
         user.setStatus(false);
         userList.add(user);
         return user;
@@ -40,29 +39,9 @@ public class ChatEditor {
         return null;
     }
 
-    // overload haveUser
-    public User haveUser(User newUser) {
-        for (User user : userList) {
-            if (user.getName().equals(newUser.getName())) {
-                return user;
-            }
-        }
-        User user = new User();
-        user.setName(newUser.getName());
-        user.setIp(newUser.getIp());
-        user.setStatus(newUser.getStatus());
-        user.setChat(newUser.getChat());
-        userList.add(user);
-        return user;
-    }
-
 
     public List<User> getUserList() {
         return userList;
-    }
-
-    public Chat getChatServerList() {
-        return null;
     }
 
 }

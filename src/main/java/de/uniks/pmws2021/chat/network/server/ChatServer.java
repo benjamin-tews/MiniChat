@@ -7,7 +7,6 @@ import de.uniks.pmws2021.chat.network.server.controller.UserController;
 import de.uniks.pmws2021.chat.network.server.websocket.ChatSocket;
 
 import java.io.EOFException;
-import java.util.List;
 
 import static de.uniks.pmws2021.chat.Constants.*;
 import static spark.Spark.*;
@@ -71,7 +70,6 @@ public class ChatServer {
     }
 
     public void stopServer() {
-        // disconnect all users
         stop();
     }
 

@@ -14,6 +14,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextInputDialog;
+
 import java.io.IOException;
 import java.util.ArrayList;
 
@@ -81,7 +82,7 @@ public class StartViewController {
         dialog.setTitle("New User");
         dialog.setHeaderText("Pls create a new user.");
         dialog.setContentText("Username: ");
-        dialog.showAndWait().ifPresent(name -> initClientViewSubcontroller(this.editor.haveUser(name.toString(), "127.0.0.1").setStatus(true)));
+        dialog.showAndWait().ifPresent(name -> initClientViewSubcontroller(this.editor.haveUser(name.toString()).setStatus(true)));
     }
 
     private void serverButtonOnClick(ActionEvent event) {
@@ -144,7 +145,7 @@ public class StartViewController {
     private void loadUsersHelper() {
         for (User user : ResourceManager.loadServerUsers()
         ) {
-            this.editor.haveUser(user.getName(), user.getIp()).setStatus(user.getStatus());
+            this.editor.haveUser(user.getName()).setStatus(user.getStatus());
         }
     }
 

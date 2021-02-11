@@ -70,7 +70,8 @@ public class ResourceManager {
             oldUsers.removeIf(oldUser -> oldUser.getName().equals(user.getName()));
 
             // add copy to list
-            oldUsers.add(user);
+            User toSave = new User().setName(user.getName()).setStatus(user.getStatus()).setIp(user.getIp());
+            oldUsers.add(toSave);
 
             // serialize as yaml
             YamlIdMap yamlIdMap = new YamlIdMap(User.class.getPackageName());
