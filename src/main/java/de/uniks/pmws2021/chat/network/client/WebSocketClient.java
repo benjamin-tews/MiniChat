@@ -1,7 +1,10 @@
 package de.uniks.pmws2021.chat.network.client;
 
 import de.uniks.pmws2021.chat.ChatEditor;
+import de.uniks.pmws2021.chat.util.JsonUtil;
+//import org.eclipse.jetty.websocket.api.Session;
 
+import javax.json.JsonObject;
 import javax.websocket.*;
 import java.net.URI;
 import java.util.Timer;
@@ -11,9 +14,7 @@ public class WebSocketClient extends Endpoint {
 
     private Session session;
     private Timer noopTimer;
-
     private final ChatEditor model;
-
     private WSCallback callback;
 
     public WebSocketClient(ChatEditor model, URI endpoint, WSCallback callback) {
@@ -62,11 +63,16 @@ public class WebSocketClient extends Endpoint {
 
     private void onMessage(String message) {
         // Process Message
+        JsonObject parse = JsonUtil.parse(message);
         // Use callback to handle it
+        this.callback.handleMessage(parse);
     }
 
     public void sendMessage(String message) {
         // check if session is still open
+        if (session.isOpen()) {
+            // RESPONSE msg to server
+        }
         // send message
     }
 
@@ -74,4 +80,5 @@ public class WebSocketClient extends Endpoint {
         // cancel timer
         // close session
     }
+
 }
