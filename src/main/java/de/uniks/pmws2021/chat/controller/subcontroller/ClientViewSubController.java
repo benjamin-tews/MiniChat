@@ -3,6 +3,8 @@ package de.uniks.pmws2021.chat.controller.subcontroller;
 import de.uniks.pmws2021.chat.ChatEditor;
 import de.uniks.pmws2021.chat.StageManager;
 import de.uniks.pmws2021.chat.model.User;
+import de.uniks.pmws2021.chat.network.client.RestClient;
+import de.uniks.pmws2021.chat.util.JsonUtil;
 import de.uniks.pmws2021.chat.util.ResourceManager;
 import de.uniks.pmws2021.chat.view.chatListViewCellFactory;
 import javafx.collections.FXCollections;
@@ -18,6 +20,17 @@ import javafx.scene.control.TabPane;
 import javafx.scene.control.TextField;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
+import kong.unirest.JsonNode;
+import org.json.JSONObject;
+
+import javax.json.JsonArray;
+import javax.json.JsonObject;
+import javax.json.JsonValue;
+
+import java.util.List;
+
+import static de.uniks.pmws2021.chat.Constants.COM_DATA;
+import static de.uniks.pmws2021.chat.Constants.COM_NAME;
 
 public class ClientViewSubController {
 
@@ -65,10 +78,27 @@ public class ClientViewSubController {
         usersObservableList = FXCollections.observableArrayList();
         // add to list
         usersObservableList.addAll(this.editor.getUserList());
+
+        // get all User online and
+        RestClient.getAllAvailableUser(response -> {
+           /* JSONObject getBody = response.getBody().getObject();
+            JSONObject parse = (JSONObject) getBody.get(COM_DATA);
+            List<User> userList = JsonUtil.parseUsers((JsonArray) parse.get(COM_NAME));
+            usersObservableList.addAll(userList);*/
+            JSONObject getBody = response.getBody().getObject();
+            String userName = getBody.get(COM_NAME).toString();
+            System.out.println(userName);
+            // ToDo set userList from response
+            usersObservableList.addAll(this.editor.getUserList());
+        });
+
+
         // ToDo: unsafe operation - fix this
         chatListView.setItems(usersObservableList);
+        chatListView.refresh();
 
         // PCL
+        // ToDo add PCL if user joins/leaves
 
     }
 
@@ -85,6 +115,7 @@ public class ClientViewSubController {
     private void chatListViewOnDoubleClick(MouseEvent event) {
         if (event.getClickCount() == 2) {
             System.out.println("Doubleclick on List Item");
+            // ToDo open new Tab / Webconenction
         }
     }
 
@@ -103,19 +134,11 @@ public class ClientViewSubController {
 
     private void leaveChatButtonOnClick(ActionEvent event) {
         System.out.println("Disconnect ClientView");
-        saveUsersHelper();
         StageManager.showMiniChatStart();
     }
 
     // ===========================================================================================
     // SUBCONTROLLER INIT & HELPER
     // ===========================================================================================
-
-    private void saveUsersHelper() {
-        for (User user : this.editor.getUserList()
-        ) {
-            ResourceManager.saveServerUsers(user);
-        }
-    }
 
 }

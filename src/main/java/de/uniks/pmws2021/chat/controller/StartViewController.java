@@ -6,17 +6,22 @@ import de.uniks.pmws2021.chat.controller.subcontroller.ClientViewSubController;
 import de.uniks.pmws2021.chat.controller.subcontroller.ServerViewSubController;
 import de.uniks.pmws2021.chat.model.Chat;
 import de.uniks.pmws2021.chat.model.User;
+import de.uniks.pmws2021.chat.network.client.RestClient;
 import de.uniks.pmws2021.chat.network.server.ChatServer;
 import de.uniks.pmws2021.chat.util.ResourceManager;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextInputDialog;
+import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.ArrayList;
+
+import static de.uniks.pmws2021.chat.Constants.COM_STATUS;
 
 public class StartViewController {
 
@@ -82,7 +87,20 @@ public class StartViewController {
         dialog.setTitle("New User");
         dialog.setHeaderText("Pls create a new user.");
         dialog.setContentText("Username: ");
-        dialog.showAndWait().ifPresent(name -> initClientViewSubcontroller(this.editor.haveUser(name.toString()).setStatus(true)));
+        //dialog.showAndWait().ifPresent(name -> initClientViewSubcontroller(this.editor.haveUser(name()).setStatus(true)));
+        dialog.showAndWait().ifPresent(name -> {
+            RestClient.login(name, response -> {
+                JSONObject parse = response.getBody().getObject();
+                String ret = parse.get(COM_STATUS).toString();
+                // if status success (user have been created and flagged to "online")
+                // Debugging
+                System.out.println(ret);
+                //new WebSocketClient();
+                // else message box error
+            });
+            // ToDo remove IP
+            initClientViewSubcontroller(this.editor.haveUser(name).setIp("127.0.0.1"));
+        });
     }
 
     private void serverButtonOnClick(ActionEvent event) {
