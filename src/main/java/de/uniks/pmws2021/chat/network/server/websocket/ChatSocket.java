@@ -10,13 +10,11 @@ import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.annotations.*;
 
 import javax.json.JsonObject;
+import javax.websocket.server.PathParam;
 import java.io.EOFException;
 import java.io.IOException;
 import java.security.Principal;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Queue;
+import java.util.*;
 import java.util.concurrent.ConcurrentLinkedDeque;
 
 import static de.uniks.pmws2021.chat.Constants.*;
@@ -39,10 +37,10 @@ public class ChatSocket {
     public void onNewConnection(Session session) throws IOException {
         // get user name from session request header
         String name = session.getUpgradeRequest().getHeader(COM_NAME);
-        String header = session.getUpgradeRequest().getHeader(COM_FROM);
 
-        System.out.println("Debug Username: " + name +" " + header +" " );
+        String queryString = session.getUpgradeRequest().getQueryString();
 
+        System.out.println("Debug Username: " +queryString);
 
         if (!name.isEmpty()) {
             // check if user has logged in
@@ -62,7 +60,7 @@ public class ChatSocket {
             session.getRemote().sendString(JsonUtil.stringify(new ServerResponse(ServerResponse.FAILURE, "Missing name parameter in header")));
             session.getRemote().flush();
             // close session
-            //session.close(1000, "Incorrect connection.");
+            session.close(1000, "Incorrect connection.");
         }
     }
 

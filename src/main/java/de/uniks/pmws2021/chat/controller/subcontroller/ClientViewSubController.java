@@ -97,38 +97,10 @@ public class ClientViewSubController {
 
     }
 
-    void handleMessage(JsonStructure jsonStructure) {
+    private void handleMessage(JsonStructure jsonStructure) {
         System.out.println("we're in here handler" + jsonStructure.toString());
-        testLabel.setText("quark");
-        // if message is private or public
-        //Platform.runLater( () -> app.getModel().getDungeon().getHero().getStats().get(0).setValue(50) );
-        //WaitForAsyncUtils.waitForFxEvents();
-
-        /*
-        JsonObject parse = JsonUtil.parse((JSONObject) jsonStructure);
-        String channel = parse.getString(COM_CHANNEL);
-        String message = parse.getString(COM_MSG);
-        if (channel.equals(COM_CHANNEL_ALL)) {
-            // public message
-            allLabel.setText(message);
-            allTab.setContent(allLabel);
-        } else if (channel.equals(COM_CHANNEL_PRIVATE)) {
-            // private message
-            String userFromName = parse.getString(COM_FROM);
-            Tab userTab = new Tab();
-            userTab.setId(userFromName);
-            Label userFromLabel = new Label();
-            userFromLabel.setText(message);
-            userTab.setContent(userFromLabel);
-            chatBoxTabPane.getTabs().add(userTab);
-            System.out.println("Debug: Private Message");
-        } else {
-            // COM_DATA
-            // system message
-            // ToDo: remove or add User from/to userlist
-        }*/
-
     }
+
 
     public void stop() {
         this.inputTextField.setOnAction(null);
