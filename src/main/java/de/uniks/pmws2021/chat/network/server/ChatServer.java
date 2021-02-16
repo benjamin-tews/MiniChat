@@ -70,6 +70,10 @@ public class ChatServer {
     }
 
     public void stopServer() {
+        /*for (User user:this.editor.getUserList()
+        ) {
+            disconnectUser(user);
+        }*/
         stop();
     }
 
