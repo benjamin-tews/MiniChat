@@ -7,6 +7,7 @@ import kong.unirest.Unirest;
 
 import javax.json.JsonObject;
 import javax.websocket.*;
+import java.io.IOException;
 import java.net.URI;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -78,7 +79,11 @@ public class WebSocketClient extends Endpoint {
         // check if session is still open
         if (this.session.isOpen()) {
             // RESPONSE msg to server
-            this.session.getAsyncRemote().sendText(message);
+            try {
+                this.session.getBasicRemote().sendText(message);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
 

@@ -146,7 +146,7 @@ public class ChatSocket {
                 Session userSession = userSessionMap.get(receivingUser);
                 // send message to the receiver
                 if (userSession.isOpen()) {
-                    userSession.getRemote().sendString(JsonUtil.buildPrivateChatMessageServer(msg, receivingUser).toString());
+                    userSession.getRemote().sendString(JsonUtil.buildPrivateChatMessageServer(msg, session.getUpgradeRequest().getHeader(COM_NAME)).toString());
                 }
             }
 
@@ -185,7 +185,7 @@ public class ChatSocket {
         for (Session session : clients
         ) {
             try {
-                session.getRemote().sendString(JsonUtil.buildPublicChatMessage(message).toString());
+                session.getRemote().sendString(JsonUtil.buildPublicChatMessageServer(message).toString());
             } catch (IOException e) {
                 e.printStackTrace();
             }

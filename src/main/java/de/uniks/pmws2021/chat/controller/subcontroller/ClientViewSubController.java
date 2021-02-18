@@ -69,20 +69,12 @@ public class ClientViewSubController {
         allUserTabAnchorPane = (AnchorPane) view.lookup("#AllUserTabAnchorPane");
         chatBox = (VBox) view.lookup("#ChatBox");
 
-        // ToDo: TabPane Elements - just dummies for now
-
         // set on mouse action
         leaveChatButton.setOnAction(this::leaveChatButtonOnClick);
         sendMsgButton.setOnAction(this::sendMsgButtonOnClick);
         inputTextField.setOnMouseClicked(this::inputTextFieldActivated);
         allUserTab.setOnMouseClicked(this::allUserTabActivated);
         chatListView.setOnMouseReleased(this::chatListViewOnDoubleClick);
-
-        // ListView Init
-        //usersObservableList = FXCollections.observableArrayList();
-        // add to list
-        //usersObservableList.addAll(this.editor.getUserList());
-
         chatListView.setItems(FXCollections.observableList(this.editor.getUserList()));
 
         // REST LOGIN
@@ -95,7 +87,6 @@ public class ClientViewSubController {
                 this.webSocketClient = new WebSocketClient(this.editor, uri, this::handleMessage, this.model);
             }
         });
-
 
         // PCL
         // ToDo add PCL if user joins/leaves
