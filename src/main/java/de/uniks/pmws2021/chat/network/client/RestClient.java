@@ -1,6 +1,7 @@
 package de.uniks.pmws2021.chat.network.client;
 
 import de.uniks.pmws2021.chat.ChatEditor;
+import de.uniks.pmws2021.chat.util.JsonUtil;
 import kong.unirest.Callback;
 import kong.unirest.HttpRequest;
 import kong.unirest.JsonNode;
@@ -17,11 +18,11 @@ public class RestClient {
     public static void login(String name, Callback<JsonNode> callback) {
         // Build Request Body
         JSONObject reqBody = new JSONObject();
-        reqBody.put(COM_NAME, name);
+            reqBody.put(COM_NAME, name);
         // Use UniRest to make login request, use the right request method and attach body data
         HttpRequest<?> req = Unirest.post(REST_SERVER_URL+API_PREFIX+USERS_PATH+LOGIN_PATH)
-                .header(COM_NAME, name)
                 .body(reqBody);
+        System.out.println(req.toString());
         sendRequest(req, callback);
     }
     
@@ -30,7 +31,6 @@ public class RestClient {
         JSONObject reqBody = new JSONObject();
         reqBody.put(COM_NAME, name);
         HttpRequest<?> req = Unirest.post(REST_SERVER_URL+API_PREFIX+USERS_PATH+LOGOUT_PATH)
-                .header(COM_NAME, name)
                 .body(reqBody);
         sendRequest(req, callback);
     }

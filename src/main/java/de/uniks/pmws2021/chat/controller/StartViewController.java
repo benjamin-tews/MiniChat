@@ -93,7 +93,7 @@ public class StartViewController {
         dialog.setContentText("Username: ");
         dialog.showAndWait().ifPresent(name -> {
             // creates user if not exists
-            initClientViewSubcontroller(this.editor.haveUser(name));
+            initClientViewSubcontroller(editor.haveUser(name));
         });
     }
 
@@ -116,7 +116,7 @@ public class StartViewController {
             StageManager.stage.setTitle("PMWS2021 - Mini Chat::Client");
             StageManager.stage.setScene(scene);
 
-            ClientViewSubController clientViewSubController = new ClientViewSubController(user, view, this.editor);
+            ClientViewSubController clientViewSubController = new ClientViewSubController(user, view, editor);
             clientViewSubController.init();
 
             // add subcontroller to list of controllers for removal
@@ -141,7 +141,7 @@ public class StartViewController {
             StageManager.stage.setScene(scene);
 
             Chat chat = new Chat();
-            ServerViewSubController serverViewSubController = new ServerViewSubController(chat, view, this.editor);
+            ServerViewSubController serverViewSubController = new ServerViewSubController(chat, view, editor);
             serverViewSubController.init();
 
             // add subcontroller to list of controllers for removal
@@ -157,7 +157,7 @@ public class StartViewController {
     private void loadUsersHelper() {
         for (User user : ResourceManager.loadServerUsers()
         ) {
-            this.editor.haveUser(user.getName()).setStatus(user.getStatus());
+            editor.haveUser(user.getName()).setStatus(user.getStatus());
         }
     }
 

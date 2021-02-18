@@ -1,11 +1,12 @@
 package de.uniks.pmws2021.chat.network.client;
 
 import de.uniks.pmws2021.chat.ChatEditor;
+import de.uniks.pmws2021.chat.model.User;
 import de.uniks.pmws2021.chat.util.JsonUtil;
+import kong.unirest.Unirest;
 
 import javax.json.JsonObject;
 import javax.websocket.*;
-import java.io.IOException;
 import java.net.URI;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -13,17 +14,19 @@ import java.util.TimerTask;
 public class WebSocketClient extends Endpoint {
 
     private final ChatEditor model;
+    private User user;
     private Session session;
     private Timer noopTimer;
     private WSCallback callback;
 
-    public WebSocketClient(ChatEditor model, URI endpoint, WSCallback callback) {
+    public WebSocketClient(ChatEditor model, URI endpoint, WSCallback callback, User user) {
         this.model = model;
+        this.user = user;
         this.noopTimer = new Timer();
 
         try {
             ClientEndpointConfig clientConfig = ClientEndpointConfig.Builder.create()
-                    .configurator(new CustomWebSocketConfigurator(endpoint.getAuthority()))
+                    .configurator(new CustomWebSocketConfigurator(user.getName()))
                     .build();
 
             WebSocketContainer container = ContainerProvider.getWebSocketContainer();
@@ -43,6 +46,7 @@ public class WebSocketClient extends Endpoint {
     public void onOpen(Session session, EndpointConfig config) {
         // Store session
         this.session = session;
+
         // add MessageHandler
         this.session.addMessageHandler(String.class, this::onMessage);
 
@@ -58,7 +62,9 @@ public class WebSocketClient extends Endpoint {
     public void onClose(Session session, CloseReason closeReason) {
         super.onClose(session, closeReason);
         // cancel timer
+        this.noopTimer.cancel();
         // set session null
+        this.session = null;
     }
 
     private void onMessage(String message) {
@@ -79,6 +85,7 @@ public class WebSocketClient extends Endpoint {
     public void stop() {
         // cancel timer
         // close session
+        Unirest.shutDown();
     }
 
 }

@@ -21,9 +21,8 @@ import static de.uniks.pmws2021.chat.Constants.*;
 
 @WebSocket
 public class ChatSocket {
-    private final ChatEditor editor;
 
-    // save all connections to send messages correctly
+    private final ChatEditor editor;
     private final Map<String, Session> userSessionMap;
     private final Queue<Session> clients;
 
@@ -36,13 +35,11 @@ public class ChatSocket {
     @OnWebSocketConnect
     public void onNewConnection(Session session) throws IOException {
         // get user name from session request header
-        String name = session.getUpgradeRequest().getHeader(COM_NAME);
+        String name = " ";
+        name = session.getUpgradeRequest().getHeader(COM_NAME);
+        System.out.println("Debug Username: " + name);
 
-        String queryString = session.getUpgradeRequest().getQueryString();
-
-        System.out.println("Debug Username: " +queryString);
-
-        if (!name.isEmpty()) {
+        if (name != null && !name.isEmpty()) {
             // check if user has logged in
             if (this.editor.haveUser(name).getStatus()) {
                 // if yes, store user with his session and add session to clients
@@ -71,6 +68,7 @@ public class ChatSocket {
         if (userSessionMap.containsKey(session)) {
 
             String userName = session.getUpgradeRequest().getHeader(COM_FROM);
+            System.out.println("Debug username: " + userName);
 
             for (Map.Entry<String, Session> entry : userSessionMap.entrySet()) {
                 // if session in userSessionMap and if its open
@@ -154,14 +152,7 @@ public class ChatSocket {
 
     public void sendUserJoined(User user) {
         // ToDo: use sendSystemMessage()
-        for (Session session : clients
-        ) {
-            try {
-                session.getRemote().sendString(JsonUtil.buildUserJoinedSystemMessage(user).toString());
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
+        sendSystemMessage(JsonUtil.buildUserJoinedSystemMessage(user).toString());
     }
 
 
