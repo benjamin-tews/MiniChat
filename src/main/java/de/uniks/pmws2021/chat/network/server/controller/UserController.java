@@ -19,9 +19,9 @@ import static de.uniks.pmws2021.chat.Constants.COM_NAME;
 import static de.uniks.pmws2021.chat.util.ServerResponse.SUCCESS;
 
 public class UserController {
-    private Chat model;
-    private ChatEditor editor;
-    private ChatSocket chatSocket;
+    private final Chat model;
+    private final ChatEditor editor;
+    private final ChatSocket chatSocket;
 
     public UserController(Chat model, ChatEditor editor, ChatSocket chatSocket) {
         this.model = model;
@@ -64,14 +64,9 @@ public class UserController {
 
         // parse request body
         JsonObject parse = JsonUtil.parse(body);
-
         // get name from body
         String userName = parse.getString(COM_NAME);
-
-        // if user doesn't exist
-        if (this.editor.getUser(userName) == null) {
-            this.editor.haveUser(userName);
-        }
+        this.editor.haveUser(userName);
 
         // check if user already logged in, if yes, return with error message
         if (this.editor.getUser(userName).getStatus()) {
@@ -80,14 +75,11 @@ public class UserController {
             err = new ServerResponse(ServerResponse.FAILURE, "User already logged on");
             return JsonUtil.stringify(err);
         } else {
-
             // set user online and save ip
             this.editor.getUser(userName).setStatus(true).setIp(req.ip());
             this.model.withAvailableUser(this.editor.getUser(userName));
-
             // send login websocket message
-            chatSocket.sendUserJoined(this.editor.getUser(userName));
-
+            this.chatSocket.sendUserJoined(this.editor.getUser(userName));
             // send response that everything went fine
             res.status(200);
             return JsonUtil.stringify(new ServerResponse(SUCCESS, JsonUtil.buildOkLogin()));

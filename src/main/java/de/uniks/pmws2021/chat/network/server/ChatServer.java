@@ -14,25 +14,28 @@ import static spark.Spark.*;
 public class ChatServer {
     // websocket
     private final ChatSocket chatSocket;
-    private Chat model;
-    private ChatEditor editor;
+    private final Chat model;
+    private final ChatEditor editor;
     // controller
-    private UserController userController;
+    private final UserController userController;
 
     public ChatServer(Chat model, ChatEditor editor) {
+
+        this.model = model;
+        this.editor = editor;
 
         // set port
         port(SERVER_PORT);
 
         // create chatsocket
-        chatSocket = new ChatSocket(editor);
+        this.chatSocket = new ChatSocket(editor);
 
         // create user controller
-        UserController userController = new UserController(model, editor, chatSocket);
+        this.userController = new UserController(this.model, this.editor, chatSocket);
 
         // start websocket
         webSocket(CHAT_WEBSOCKET_PATH, chatSocket);
-        init();
+        //init();
 
         // rest setup
         before("*", ((request, response) -> response.header("Access-Control-Allow-Origin", "*")));
@@ -70,6 +73,10 @@ public class ChatServer {
     }
 
     public void stopServer() {
+        /*for (User user:this.editor.getUserList()
+        ) {
+            disconnectUser(user);
+        }*/
         stop();
     }
 

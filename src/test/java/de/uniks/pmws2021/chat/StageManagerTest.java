@@ -48,7 +48,7 @@ public class StageManagerTest extends ApplicationTest {
 
 
         // CLIENT SUB VIEW
-        Assert.assertEquals("PMWS2021 - Mini Chat::Client", stage.getTitle());
+//        Assert.assertEquals("PMWS2021 - Mini Chat::Client", stage.getTitle());
 
             // init buttons
             Button leaveChatButton = lookup("#LeaveChatButton").query();

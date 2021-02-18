@@ -3,8 +3,8 @@ package de.uniks.pmws2021.chat.network.server.websocket;
 import de.uniks.pmws2021.chat.ChatEditor;
 import de.uniks.pmws2021.chat.Constants;
 import de.uniks.pmws2021.chat.model.User;
-import de.uniks.pmws2021.chat.util.ServerResponse;
 import de.uniks.pmws2021.chat.util.JsonUtil;
+import de.uniks.pmws2021.chat.util.ServerResponse;
 import de.uniks.pmws2021.chat.util.ValidationUtil;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.annotations.*;
@@ -21,9 +21,8 @@ import static de.uniks.pmws2021.chat.Constants.*;
 
 @WebSocket
 public class ChatSocket {
-    private final ChatEditor editor;
 
-    // save all connections to send messages correctly
+    private final ChatEditor editor;
     private final Map<String, Session> userSessionMap;
     private final Queue<Session> clients;
 
@@ -36,11 +35,12 @@ public class ChatSocket {
     @OnWebSocketConnect
     public void onNewConnection(Session session) throws IOException {
         // get user name from session request header
-        String name = session.getUpgradeRequest().getHeader(COM_NAME);
+        String name = " ";
+        name = session.getUpgradeRequest().getHeader(COM_NAME);
 
         if (name != null && !name.isEmpty()) {
             // check if user has logged in
-            if (this.editor.getUser(name).getStatus()) {
+            if (this.editor.haveUser(name).getStatus()) {
                 // if yes, store user with his session and add session to clients
                 userSessionMap.put(name, session);
                 clients.add(session);
@@ -49,6 +49,7 @@ public class ChatSocket {
             } else {
                 // if not, send response that the user has to log in first and close session
                 session.getRemote().sendString(JsonUtil.stringify(new ServerResponse(ServerResponse.FAILURE, "User has to login first")));
+                session.close(1000, "user not logged in");
             }
         } else {
             // send message to given session
@@ -66,11 +67,12 @@ public class ChatSocket {
         if (userSessionMap.containsKey(session)) {
 
             String userName = session.getUpgradeRequest().getHeader(COM_FROM);
+            System.out.println("Debug username: " + userName);
 
             for (Map.Entry<String, Session> entry : userSessionMap.entrySet()) {
                 // if session in userSessionMap and if its open
                 if (entry.getValue().equals(session) && entry.getValue().isOpen()) {
-                    killConnection(this.editor.getUser((entry.getKey())), reason);
+                    killConnection(this.editor.haveUser((entry.getKey())), reason);
                     userSessionMap.remove(session);
                     clients.remove(session);
                     sendUserLeft(this.editor.getUser(userName));
@@ -112,44 +114,37 @@ public class ChatSocket {
                 }
             }
 
-
             // parse string message to json
-            JsonObject parse = JsonUtil.parse(message);
-
-            // get user name (from)
-            String userName = session.getUpgradeRequest().getHeader(COM_FROM);
+            JsonObject parseMessage = JsonUtil.parse(message);
 
             // get channel identifier
-            String channel = parse.getString(COM_CHANNEL);
+            String channel = parseMessage.getString(COM_CHANNEL);
+            String msg = parseMessage.getString(COM_MSG);
 
-            // build answer message (channel, from, message)
-            String answerMessage = parse.getString(COM_MSG);
 
             // Check if the message is public or private
             // if message is public, send message to every client
             // check if session is open before sending message
             if (channel.equals(COM_CHANNEL_ALL)) {
                 // public message
-                if (session.isOpen()) {
-                    sendSystemMessage(answerMessage);
-                }
-            } else {
-                // if message is private
-                // lookup session of receiving user
-                String receivingUser = parse.getString(COM_TO);
-                Session receivingUserSession = null;
-
-                for (Map.Entry<String, Session> entry : userSessionMap.entrySet()) {
-                    if (entry.getKey().equals(receivingUser)) {
-                        receivingUserSession = entry.getValue();
+                for (Session activeSession : clients
+                ) {
+                    try {
+                        if (activeSession.isOpen()) {
+                            activeSession.getRemote().sendString(JsonUtil.buildPublicChatMessageServer(msg).toString());
+                        }
+                    } catch (IOException e) {
+                        e.printStackTrace();
                     }
                 }
-
-                // check if session is open
-                assert receivingUserSession != null;
-                if (receivingUserSession.isOpen()) {
-                    // send message to the receiver
-                    receivingUserSession.getRemote().sendString(JsonUtil.buildPrivateChatMessage(answerMessage, receivingUser).toString());
+            } else if (channel.equals(COM_CHANNEL_PRIVATE)) {
+                // if message is private
+                // lookup session of receiving user
+                String receivingUser = parseMessage.getString(COM_TO);
+                Session userSession = userSessionMap.get(receivingUser);
+                // send message to the receiver
+                if (userSession.isOpen()) {
+                    userSession.getRemote().sendString(JsonUtil.buildPrivateChatMessageServer(msg, session.getUpgradeRequest().getHeader(COM_NAME)).toString());
                 }
             }
 
@@ -160,26 +155,28 @@ public class ChatSocket {
     }
 
     public void sendUserJoined(User user) {
-        // ToDo: use sendSystemMessage()
         for (Session session : clients
         ) {
-            try {
-                session.getRemote().sendString(JsonUtil.buildUserJoinedSystemMessage(user).toString());
-            } catch (IOException e) {
-                e.printStackTrace();
+            if (session.isOpen()) {
+                try {
+                    session.getRemote().sendString(JsonUtil.buildUserJoinedSystemMessage(user).toString());
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
         }
     }
 
 
     public void sendUserLeft(User user) {
-        // ToDo: use sendSystemMessage()
         for (Session session : clients
         ) {
-            try {
-                session.getRemote().sendString(JsonUtil.buildUserLeftSystemMessage(user).toString());
-            } catch (IOException e) {
-                e.printStackTrace();
+            if (session.isOpen()) {
+                try {
+                    session.getRemote().sendString(JsonUtil.buildUserLeftSystemMessage(user).toString());
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
         }
     }
@@ -201,7 +198,7 @@ public class ChatSocket {
         for (Session session : clients
         ) {
             try {
-                session.getRemote().sendString(JsonUtil.buildPublicChatMessage(message).toString());
+                session.getRemote().sendString(JsonUtil.buildPublicChatMessageServer(message).toString());
             } catch (IOException e) {
                 e.printStackTrace();
             }

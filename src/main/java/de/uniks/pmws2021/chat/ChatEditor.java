@@ -26,6 +26,7 @@ public class ChatEditor {
         User user = new User();
         user.setName(name);
         user.setStatus(false);
+        user.setIp("127.0.0.1");
         userList.add(user);
         return user;
     }

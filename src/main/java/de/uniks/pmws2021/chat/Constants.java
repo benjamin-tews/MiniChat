@@ -3,7 +3,7 @@ package de.uniks.pmws2021.chat;
 public class Constants {
     // Server
     public static final String SERVER_CONFIG_PATH = "server.yaml";
-    public static final int SERVER_PORT = 3000;
+    public static final int SERVER_PORT = 42420;
     public static final String CHAT_WEBSOCKET_PATH = "/ws/chat";
     public static final String API_PREFIX = "/api";
     public static final String USERS_PATH = "/users";
@@ -32,8 +32,8 @@ public class Constants {
     public static final String COM_USER = "user";
 
     // Client
-    public static final String REST_SERVER_URL = "http://localhost:3000";
-    public static final String WS_SERVER_URL = "ws://localhost:3000";
+    public static final String REST_SERVER_URL = "http://localhost:42420";
+    public static final String WS_SERVER_URL = "ws://localhost:42420";
     public static final String CHAT_SOCKET_URL = WS_SERVER_URL + CHAT_WEBSOCKET_PATH;
 
 }

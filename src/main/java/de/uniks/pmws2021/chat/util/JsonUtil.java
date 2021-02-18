@@ -89,6 +89,7 @@ public class JsonUtil {
                 .build();
     }
 
+    // from Client to Server
     public static JsonObject buildPublicChatMessage(String message) {
         return Json.createObjectBuilder()
                 .add(Constants.COM_CHANNEL, Constants.COM_CHANNEL_ALL)
@@ -96,6 +97,7 @@ public class JsonUtil {
                 .build();
     }
 
+    // from Client to Server
     public static JsonObject buildPrivateChatMessage(String message, String to) {
         return Json.createObjectBuilder()
                 .add(Constants.COM_CHANNEL, Constants.COM_CHANNEL_PRIVATE)
@@ -103,4 +105,22 @@ public class JsonUtil {
                 .add(Constants.COM_MSG, message)
                 .build();
     }
+
+    // from Server to Client
+    public static JsonObject buildPublicChatMessageServer(String message) {
+        return Json.createObjectBuilder()
+                .add(Constants.COM_CHANNEL, Constants.COM_CHANNEL_ALL)
+                .add(Constants.COM_MSG, message)
+                .build();
+    }
+
+    // from Server to Client
+    public static JsonObject buildPrivateChatMessageServer(String message, String userName) {
+        return Json.createObjectBuilder()
+                .add(Constants.COM_CHANNEL, Constants.COM_CHANNEL_PRIVATE)
+                .add(Constants.COM_MSG, message)
+                .add(Constants.COM_FROM, userName)
+                .build();
+    }
+
 }

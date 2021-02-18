@@ -6,17 +6,26 @@ import de.uniks.pmws2021.chat.controller.subcontroller.ClientViewSubController;
 import de.uniks.pmws2021.chat.controller.subcontroller.ServerViewSubController;
 import de.uniks.pmws2021.chat.model.Chat;
 import de.uniks.pmws2021.chat.model.User;
+import de.uniks.pmws2021.chat.network.client.RestClient;
+import de.uniks.pmws2021.chat.network.client.WebSocketClient;
 import de.uniks.pmws2021.chat.network.server.ChatServer;
+import de.uniks.pmws2021.chat.util.JsonUtil;
 import de.uniks.pmws2021.chat.util.ResourceManager;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextInputDialog;
+import org.json.JSONObject;
 
+import javax.json.JsonStructure;
 import java.io.IOException;
+import java.net.URI;
 import java.util.ArrayList;
+
+import static de.uniks.pmws2021.chat.Constants.COM_STATUS;
 
 public class StartViewController {
 
@@ -82,7 +91,10 @@ public class StartViewController {
         dialog.setTitle("New User");
         dialog.setHeaderText("Pls create a new user.");
         dialog.setContentText("Username: ");
-        dialog.showAndWait().ifPresent(name -> initClientViewSubcontroller(this.editor.haveUser(name.toString()).setStatus(true)));
+        dialog.showAndWait().ifPresent(name -> {
+            // creates user if not exists
+            initClientViewSubcontroller(editor.haveUser(name));
+        });
     }
 
     private void serverButtonOnClick(ActionEvent event) {
@@ -104,7 +116,7 @@ public class StartViewController {
             StageManager.stage.setTitle("PMWS2021 - Mini Chat::Client");
             StageManager.stage.setScene(scene);
 
-            ClientViewSubController clientViewSubController = new ClientViewSubController(user, view, this.editor);
+            ClientViewSubController clientViewSubController = new ClientViewSubController(user, view, editor);
             clientViewSubController.init();
 
             // add subcontroller to list of controllers for removal
@@ -129,7 +141,7 @@ public class StartViewController {
             StageManager.stage.setScene(scene);
 
             Chat chat = new Chat();
-            ServerViewSubController serverViewSubController = new ServerViewSubController(chat, view, this.editor);
+            ServerViewSubController serverViewSubController = new ServerViewSubController(chat, view, editor);
             serverViewSubController.init();
 
             // add subcontroller to list of controllers for removal
@@ -145,7 +157,7 @@ public class StartViewController {
     private void loadUsersHelper() {
         for (User user : ResourceManager.loadServerUsers()
         ) {
-            this.editor.haveUser(user.getName()).setStatus(user.getStatus());
+            editor.haveUser(user.getName()).setStatus(user.getStatus());
         }
     }
 

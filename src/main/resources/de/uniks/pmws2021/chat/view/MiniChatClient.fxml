@@ -19,19 +19,12 @@
               <tabs>
                 <Tab id="AllUserTab" closable="false" text="All">
                   <content>
-                    <AnchorPane id="AllUserTabAnchorPane" minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
+                    <AnchorPane id="AllUserTabAnchorPane" minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                           <children>
+                              <VBox id="ChatBox" layoutX="10.0" layoutY="27.0" prefHeight="200.0" prefWidth="365.0" />
+                           </children></AnchorPane>
                   </content>
                 </Tab>
-                <Tab text="User1">
-                  <content>
-                    <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
-                  </content>
-                </Tab>
-                  <Tab id="UserTwoTab" text="User2">
-                     <content>
-                        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
-                     </content>
-                  </Tab>
               </tabs>
                <VBox.margin>
                   <Insets top="24.0" />
