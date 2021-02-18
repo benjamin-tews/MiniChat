@@ -83,12 +83,7 @@ public class StageManagerTest extends ApplicationTest {
 
             // check buttons
             clickOn(disconnectAllButton);
-            clickOn(memberListView);
-            clickOn(disconnectOneButton);
             clickOn(closeServerButton);
-
-        // CHAT START VIEW
-        Assert.assertEquals("PMWS2021 - Mini Chat", stage.getTitle());
 
         // DONE
 
