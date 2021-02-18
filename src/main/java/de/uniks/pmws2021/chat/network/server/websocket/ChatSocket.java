@@ -128,20 +128,26 @@ public class ChatSocket {
             // check if session is open before sending message
             if (channel.equals(COM_CHANNEL_ALL)) {
                 // public message
-                System.out.println("message to all");
-                if (session.isOpen()) {
-                    System.out.println("message to all 2");
-                    session.getRemote().sendString(JsonUtil.buildPublicChatMessageServer(msg).toString());
+                for (Session activeSession : clients
+                ) {
+                    try {
+                        if (activeSession.isOpen()) {
+                            activeSession.getRemote().sendString(JsonUtil.buildPublicChatMessageServer(msg).toString());
+                        }
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
                 }
             } else if (channel.equals(COM_CHANNEL_PRIVATE)) {
                 // if message is private
                 // lookup session of receiving user
-                System.out.println("private");
                 String receivingUser = parseMessage.getString(COM_TO);
                 System.out.println("Username parse from header: " + receivingUser);
-
+                Session userSession = userSessionMap.get(receivingUser);
                 // send message to the receiver
-                session.getRemote().sendString(JsonUtil.buildPrivateChatMessageServer(msg, receivingUser).toString());
+                if (userSession.isOpen()) {
+                    userSession.getRemote().sendString(JsonUtil.buildPrivateChatMessageServer(msg, receivingUser).toString());
+                }
             }
 
         } catch (Exception e) {
@@ -158,14 +164,7 @@ public class ChatSocket {
 
     public void sendUserLeft(User user) {
         // ToDo: use sendSystemMessage()
-        for (Session session : clients
-        ) {
-            try {
-                session.getRemote().sendString(JsonUtil.buildUserLeftSystemMessage(user).toString());
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
+        sendSystemMessage(JsonUtil.buildUserLeftSystemMessage(user).toString());
     }
 
 

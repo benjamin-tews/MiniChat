@@ -16,12 +16,14 @@ import javafx.scene.Parent;
 import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.VBox;
 import org.json.JSONObject;
 
 import javax.json.JsonObject;
 import javax.json.JsonStructure;
 import java.net.URI;
-import java.net.URISyntaxException;
+import java.util.ArrayList;
+import java.util.List;
 
 import static de.uniks.pmws2021.chat.Constants.*;
 
@@ -39,8 +41,11 @@ public class ClientViewSubController {
     private ObservableList<User> usersObservableList;
     private WebSocketClient webSocketClient;
     private Node allUserTab;
-    private Label testLabel;
     private User userData;
+    private VBox chatBox;
+    private List<Label> messages = new ArrayList<>();
+    private int index = 0;
+    private int userIndex = 0;
 
     // ===========================================================================================
     // CONTROLLER
@@ -62,7 +67,7 @@ public class ClientViewSubController {
         chatListView = (ListView<User>) view.lookup("#ChatListView");
         chatListView.setCellFactory(new chatListViewCellFactory());
         allUserTabAnchorPane = (AnchorPane) view.lookup("#AllUserTabAnchorPane");
-        testLabel = (Label) view.lookup("#TestLabel");
+        chatBox = (VBox) view.lookup("#ChatBox");
 
         // ToDo: TabPane Elements - just dummies for now
 
@@ -98,17 +103,25 @@ public class ClientViewSubController {
     }
 
     private void handleMessage(JsonStructure jsonStructure) {
-        // Debug: System.out.println("we're in here handler" + jsonStructure.toString());
-        //System.out.println("Der JSON Structure String: " + jsonStructure.toString());
         JsonObject parse = JsonUtil.parse(jsonStructure.toString());
         String message = parse.getString(COM_MSG);
         String channel = parse.getString(COM_CHANNEL);
         System.out.println(channel);
+        VBox userChatBox = new VBox();
+        List<Label> userMessage = new ArrayList<>();
+
         if (channel.equals(COM_CHANNEL_ALL)) {
-            Platform.runLater(() -> testLabel.setText(message));
+            messages.add(new Label(message));
+            // Platform run later for UI Refresh
+            Platform.runLater(() -> {
+                chatBox.getChildren().add(messages.get(index));
+                index++;
+            });
         } else if (channel.equals(COM_CHANNEL_PRIVATE)) {
+            userIndex = 0;
             Platform.runLater(() -> {
                 String userTo = parse.getString(COM_FROM);
+
                 // create new tab if not exists
                 ObservableList<Tab> tabList = chatBoxTabPane.getTabs();
                 boolean found = false;
@@ -126,13 +139,14 @@ public class ClientViewSubController {
                     Tab userTab = new Tab();
                     userTab.setId(userTo + "Tab");
                     userTab.setText(userTo);
-                    // create label
-                    Label userLabel = new Label();
-                    userLabel.setId(userTo + "Label");
-                    userLabel.setText(message);
-                    userTab.setContent(userLabel);
+                    // create ChatBox
+                    userTab.setContent(userChatBox);
                     chatBoxTabPane.getTabs().add(userTab);
+                    chatBoxTabPane.getSelectionModel().select(userTab);
                 }
+                userMessage.add(new Label(message));
+                userChatBox.getChildren().add(userMessage.get(userIndex));
+                userIndex++;
             });
         }
     }
@@ -160,6 +174,7 @@ public class ClientViewSubController {
             ) {
                 if (tab.getText().equals(userData.getName())) {
                     found = true;
+                    chatBoxTabPane.getSelectionModel().select(tab);
                 }
             }
             if (!found) {
@@ -167,6 +182,7 @@ public class ClientViewSubController {
                 userTab.setId(userData.getName() + "Tab");
                 userTab.setText(userData.getName());
                 chatBoxTabPane.getTabs().add(userTab);
+                chatBoxTabPane.getSelectionModel().select(userTab);
             }
         }
     }
@@ -184,7 +200,7 @@ public class ClientViewSubController {
         if (chatBoxTabPane.getSelectionModel().isSelected(0)) {
             // build public message
             JsonObject allMessage = JsonUtil.buildPublicChatMessage(inputTextField.getText());
-            webSocketClient.sendMessage(allMessage.toString());
+            this.webSocketClient.sendMessage(allMessage.toString());
         } else {
             // check if single User Tab
             String username = chatBoxTabPane.getSelectionModel().getSelectedItem().getText();
