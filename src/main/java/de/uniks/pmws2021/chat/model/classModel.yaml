@@ -1,0 +1,90 @@
+- c: 	ClassModel
+  classes: 	chat 	user
+  defaultCollectionType: 	c1
+  defaultPropertyStyle: 	Bean
+  defaultRoleType: 	"java.util.ArrayList<%s>"
+  mainJavaDir: 	"src/main/java"
+  packageName: 	de.uniks.pmws2021.chat.model
+  packageSrcFolder: 	"src/main/java/de/uniks/pmws2021/chat/model"
+
+- chat: 	Clazz
+  attributes: 	chat_currentUsername
+  model: 	c
+  modified: 	false
+  name: 	Chat
+  propertyStyle: 	Bean
+  roles: 	chat_availableUser
+
+- user: 	Clazz
+  attributes: 	user_name 	user_ip 	user_status
+  model: 	c
+  modified: 	false
+  name: 	User
+  propertyStyle: 	Bean
+  roles: 	user_chat
+
+- c1: 	CollectionType
+  implClass: 	class java.util.ArrayList
+  implTemplate: 	"java.util.ArrayList<%s>"
+  itf: 	org.fulib.classmodel.CollectionInterface.List
+  qualifiedImplName: 	java.util.ArrayList
+  simpleImplName: 	ArrayList
+
+- chat_currentUsername: 	Attribute
+  clazz: 	chat
+  id: 	Chat_currentUsername
+  modified: 	false
+  name: 	currentUsername
+  propertyStyle: 	Bean
+  type: 	String
+  typeSignature: 	String
+
+- chat_availableUser: 	AssocRole
+  aggregation: 	false
+  cardinality: 	42
+  clazz: 	chat
+  collectionType: 	c1
+  id: 	Chat_availableUser
+  modified: 	false
+  name: 	availableUser
+  other: 	user_chat
+  propertyStyle: 	Bean
+  roleType: 	"java.util.ArrayList<%s>"
+
+- user_name: 	Attribute
+  clazz: 	user
+  id: 	User_name
+  modified: 	false
+  name: 	name
+  propertyStyle: 	Bean
+  type: 	String
+  typeSignature: 	String
+
+- user_ip: 	Attribute
+  clazz: 	user
+  id: 	User_ip
+  modified: 	false
+  name: 	ip
+  propertyStyle: 	Bean
+  type: 	String
+  typeSignature: 	String
+
+- user_status: 	Attribute
+  clazz: 	user
+  id: 	User_status
+  modified: 	false
+  name: 	status
+  propertyStyle: 	Bean
+  type: 	Boolean
+  typeSignature: 	Boolean
+
+- user_chat: 	AssocRole
+  aggregation: 	false
+  cardinality: 	1
+  clazz: 	user
+  id: 	User_chat
+  modified: 	false
+  name: 	chat
+  other: 	chat_availableUser
+  propertyStyle: 	Bean
+
